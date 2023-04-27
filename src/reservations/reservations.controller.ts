@@ -12,7 +12,7 @@ import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create.reservation.dto';
 import { AccessTokenGuard } from '../auth/jwt/access.guard';
 import { User } from '../entities/user.entity';
-import { GetUser } from '../decorator/get.user.decorator';
+import { GetUser } from '../../common/decorator/get.user.decorator';
 
 @Controller('reservations')
 //클래스 레벨에서 가드 사용
