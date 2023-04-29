@@ -22,16 +22,18 @@ export class AuthService {
   //회원가입
   async register(userInfo: SignUpDto): Promise<SignUpDto> {
     //이메일 및 닉네임 중복확인
-    const existUser = await this.userService.findByFields({
-      where: [{ nickname: userInfo.nickname }, { email: userInfo.email }],
+    const existNickname = await this.userService.findByFields({
+      where: { nickname: userInfo.nickname },
     });
-    if (existUser) {
-      if (existUser.nickname === userInfo.nickname)
-        throw new ConflictException('중복 닉네임');
 
-      if (existUser.email === userInfo.email)
-        throw new ConflictException('중복 이메일');
-    }
+    const existEmail = await this.userService.findByFields({
+      where: { email: userInfo.email },
+    });
+
+    if (existNickname) throw new ConflictException('중복 닉네임');
+
+    if (existEmail) throw new ConflictException('중복 이메일');
+
     //중복 확인 이후 유저 정보저장
     return await this.userService.saveUserInfo(userInfo);
   }
