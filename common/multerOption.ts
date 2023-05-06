@@ -3,9 +3,9 @@ import { BadRequestException } from '@nestjs/common';
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
 
-const accessKeyId = String(process.env.KTH_ACCESKEYID);
-const secretAccessKey = String(process.env.KTH_SECRETKEYID);
-const bucket = String(process.env.KTH_S3_BUCKET_NAME);
+const accessKeyId = process.env.KTH_ACCESKEYID;
+const secretAccessKey = process.env.KTH_SECRETKEYID;
+const bucket = process.env.KTH_S3_BUCKET_NAME;
 
 const s3 = new S3Client({
   region: 'ap-northeast-2',
