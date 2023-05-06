@@ -1,13 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FindAllHouseDto } from './dto/findall.house.dto';
 import { House } from '../entities/house.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateHouseDto } from './dto/create.house.dto';
 
 @Injectable()
 export class HousesService {
   constructor(
     @InjectRepository(House) private houseRepository: Repository<House>,
+    private dataSource: DataSource,
   ) {}
 
   async findHouseList(findAllHouseDto: FindAllHouseDto): Promise<object[]> {
@@ -24,6 +31,42 @@ export class HousesService {
         'pricePerDay',
       ],
     });
+  }
+
+  async createHouse(
+    createHouseDto: CreateHouseDto,
+    files: Array<Express.MulterS3.File>,
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+
+    await queryRunner.startTransaction();
+
+    try {
+      if (!files[0]) throw new BadRequestException('이미지가 없습니다.');
+
+      const images = files.map((file, index) => {
+        const url = file.location;
+        const key = index + 1;
+        return { url, key };
+      });
+
+      const house = await this.houseRepository.create({
+        ...createHouseDto,
+        images,
+      });
+
+      const result = await queryRunner.manager.save(house);
+      console.log(result);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new HttpException('매물등록 트랜잭션 롤백 에러', 500);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findHouse(id: number): Promise<House> {
