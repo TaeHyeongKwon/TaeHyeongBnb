@@ -39,6 +39,7 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
+    "helmet": "^7.0.0",
     "multer-s3": "^3.0.1",
     "mysql2": "^3.2.3",
     "passport": "^0.6.0",
