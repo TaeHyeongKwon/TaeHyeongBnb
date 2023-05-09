@@ -12,7 +12,7 @@ $ npm run test:watch
 
 ## 기술스택
 
-TypeScript, NestJS, TypeOrm, MySql, JWT
+TypeScript, NestJS, TypeOrm, MySql, JWT, Multer, AWS-S3
 
 ## ERD
 
@@ -27,6 +27,10 @@ TypeScript, NestJS, TypeOrm, MySql, JWT
 - DB_NAME
 - ACCESS_JWT_SECRET
 - REFRESH_JWT_SECRET
+- SERVER_PORT
+- KTH_ACCESKEYID
+- KTH_SECRETKEYID
+- KTH_S3_BUCKET_NAME
 
 ## API 경로
 
@@ -37,5 +41,6 @@ TypeScript, NestJS, TypeOrm, MySql, JWT
 |    Post    | /auth/refresh-token |      accessToken재발급       |
 |    Get     |    /houses/list     |    숙소 매물 리스트 조회     |
 |    Get     |    /houses/{id}     |     숙소 매물 상세 조회      |
+|    Post    |       /houses       |      숙소 매물 등록하기      |
 |    Post    | /reservations/{id}  |      숙소 매물 예약하기      |
 |    Get     |  /reservations/my   | 사용자 예약 매물 리스트 조회 |
