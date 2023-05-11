@@ -9,22 +9,22 @@ export class House {
   @OneToMany(() => Reservation, (reservation) => reservation.house)
   reservation: Reservation;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 10000 })
   description: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   address: string;
 
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   university: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   houseType: string;
 
-  @Column()
+  @Column({ type: 'int' })
   pricePerDay: number;
 
   @Column({ type: 'json' })

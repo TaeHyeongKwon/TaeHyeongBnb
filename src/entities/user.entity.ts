@@ -9,12 +9,15 @@ export class User {
   @OneToMany(() => Reservation, (reservation) => reservation.user)
   reservations: Reservation[];
 
-  @Column()
+  @Column({ type: 'varchar', length: 100 })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50 })
   nickname: string;
 
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   password: string;
+
+  @Column({ type: 'varchar', default: 'local' })
+  registration_path: string;
 }

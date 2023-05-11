@@ -22,16 +22,16 @@ export class Reservation {
   @JoinColumn({ name: 'houseId' })
   house: House;
 
-  @Column()
+  @Column({ type: 'int' })
   houseId: number;
 
-  @Column()
+  @Column({ type: 'int' })
   userId: number;
 
-  @Column()
+  @Column({ type: 'date' })
   check_in: string;
 
-  @Column()
+  @Column({ type: 'date' })
   check_out: string;
 
   @BeforeInsert()
