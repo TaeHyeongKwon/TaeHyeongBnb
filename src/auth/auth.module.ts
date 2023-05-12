@@ -8,6 +8,7 @@ import { UserService } from './user.service';
 import { AccessStrategy } from './jwt/access.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { RefreshStrategy } from './jwt/refresh.strategy';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RefreshStrategy } from './jwt/refresh.strategy';
       signOptions: { expiresIn: '24h' },
     }),
     PassportModule,
+    HttpModule,
   ],
   exports: [TypeOrmModule, AccessStrategy, PassportModule],
   controllers: [AuthController],

@@ -9,6 +9,9 @@ import {
   HttpStatus,
   Req,
   UseGuards,
+  Get,
+  Header,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
@@ -16,6 +19,7 @@ import { Request, Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { Payload } from './jwt/jwt.payload.interface';
 import { RefreshTokenGuard } from './jwt/refresh.guard';
+const { KAKAO_API_KEY, CODE_REDIRECT_URI } = process.env;
 
 @Controller('auth')
 export class AuthController {
@@ -63,5 +67,30 @@ export class AuthController {
     res.setHeader('Authorizetion', 'Bearer ' + newJwt);
 
     return res.json({ msg: '토큰 재발급' });
+  }
+
+  @Get('kakao-login-page')
+  @Header('Content-Type', 'text/html')
+  async kakaoRedirect(@Res() res: Response): Promise<void> {
+    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_API_KEY}&redirect_uri=${CODE_REDIRECT_URI}`;
+    res.redirect(url);
+  }
+
+  @Get('kakao')
+  async getKakaoInfo(@Query() query: { code }, @Res() res: Response) {
+    const apikey = KAKAO_API_KEY;
+    const redirectUri = CODE_REDIRECT_URI;
+    const loginToken = await this.authService.kakaoLogin(
+      apikey,
+      redirectUri,
+      query.code,
+    );
+
+    res.setHeader('Authorizetion', 'Bearer ' + loginToken.accessToken);
+    res.cookie('refresh', loginToken.refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    return res.json({ msg: '로그인 성공' });
   }
 }
