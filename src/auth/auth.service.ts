@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import { UserService } from './user.service';
@@ -29,6 +30,7 @@ export class AuthService {
     const existEmail = await this.userService.findByFields({
       where: { email: userInfo.email },
     });
+    if (!userInfo.password) throw new BadRequestException('비밀번호 입력 필요');
 
     if (existNickname) throw new ConflictException('중복 닉네임');
 

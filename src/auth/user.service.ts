@@ -30,7 +30,7 @@ export class UserService {
     await queryRunner.startTransaction();
     try {
       //비밀번호 해싱처리
-      await this.transformPassword(userInfo);
+      if (userInfo.password) await this.transformPassword(userInfo);
 
       const user = new User();
       user.email = userInfo.email;
