@@ -40,7 +40,7 @@ TypeScript, NestJS, TypeOrm, MySql, JWT, Multer, AWS-S3
 | :--------: | :--------------------: | :--------------------------: |
 |    Post    |     /auth/sign-up      |           회원가입           |
 |    Post    |      /auth/login       |            로그인            |
-|    GET     | /auth/kakao-login-page |         카카오로그인         |
+|    Get     | /auth/kakao-login-page |         카카오로그인         |
 |    Post    |  /auth/refresh-token   |      accessToken재발급       |
 |    Get     |      /houses/list      |    숙소 매물 리스트 조회     |
 |    Get     |      /houses/{id}      |     숙소 매물 상세 조회      |
