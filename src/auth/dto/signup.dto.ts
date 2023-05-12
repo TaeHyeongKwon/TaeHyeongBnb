@@ -10,7 +10,6 @@ export class SignUpDto {
   @IsString()
   nickname: string;
 
-  @IsNotEmpty()
   @IsString()
   password: string;
 }
