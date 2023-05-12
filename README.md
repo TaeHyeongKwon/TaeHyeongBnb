@@ -31,16 +31,19 @@ TypeScript, NestJS, TypeOrm, MySql, JWT, Multer, AWS-S3
 - KTH_ACCESKEYID
 - KTH_SECRETKEYID
 - KTH_S3_BUCKET_NAME
+- KAKAO_API_KEY
+- CODE_REDIRECT_URI
 
 ## API 경로
 
-| HTTP메소드 |        경로         |             기능             |
-| :--------: | :-----------------: | :--------------------------: |
-|    Post    |    /auth/sign-up    |           회원가입           |
-|    Post    |     /auth/login     |            로그인            |
-|    Post    | /auth/refresh-token |      accessToken재발급       |
-|    Get     |    /houses/list     |    숙소 매물 리스트 조회     |
-|    Get     |    /houses/{id}     |     숙소 매물 상세 조회      |
-|    Post    |       /houses       |      숙소 매물 등록하기      |
-|    Post    | /reservations/{id}  |      숙소 매물 예약하기      |
-|    Get     |  /reservations/my   | 사용자 예약 매물 리스트 조회 |
+| HTTP메소드 |          경로          |             기능             |
+| :--------: | :--------------------: | :--------------------------: |
+|    Post    |     /auth/sign-up      |           회원가입           |
+|    Post    |      /auth/login       |            로그인            |
+|    GET     | /auth/kakao-login-page |         카카오로그인         |
+|    Post    |  /auth/refresh-token   |      accessToken재발급       |
+|    Get     |      /houses/list      |    숙소 매물 리스트 조회     |
+|    Get     |      /houses/{id}      |     숙소 매물 상세 조회      |
+|    Post    |        /houses         |      숙소 매물 등록하기      |
+|    Post    |   /reservations/{id}   |      숙소 매물 예약하기      |
+|    Get     |    /reservations/my    | 사용자 예약 매물 리스트 조회 |
