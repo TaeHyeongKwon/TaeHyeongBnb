@@ -1,5 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Reservation } from './reservation.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class House {
@@ -8,6 +16,13 @@ export class House {
 
   @OneToMany(() => Reservation, (reservation) => reservation.house)
   reservation: Reservation;
+
+  @ManyToOne(() => User, (user) => user.house)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column({ type: 'int' })
+  userId: number;
 
   @Column({ type: 'varchar', length: 100 })
   name: string;
