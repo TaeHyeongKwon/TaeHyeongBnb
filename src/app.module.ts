@@ -10,6 +10,8 @@ import { House } from './entities/house.entity';
 import { Reservation } from './entities/reservation.entity';
 import { HousesModule } from './houses/houses.module';
 import { ReservationsModule } from './reservations/reservations.module';
+import { HostModule } from './host/host.module';
+import { Host } from './entities/host.entity';
 
 @Module({
   imports: [
@@ -20,12 +22,13 @@ import { ReservationsModule } from './reservations/reservations.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, House, Reservation],
+      entities: [User, House, Reservation, Host],
       synchronize: true,
     }),
     AuthModule,
     HousesModule,
     ReservationsModule,
+    HostModule,
   ],
   controllers: [AppController],
   providers: [AppService],
