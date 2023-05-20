@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpException,
   Injectable,
   NotFoundException,
@@ -9,6 +10,7 @@ import { House } from '../entities/house.entity';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateHouseDto } from './dto/create.house.dto';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class HousesService {
@@ -34,9 +36,13 @@ export class HousesService {
   }
 
   async createHouse(
+    user: User,
     createHouseDto: CreateHouseDto,
     files: Array<Express.MulterS3.File>,
   ): Promise<void> {
+    if (user.host_certification !== true)
+      throw new ForbiddenException('호스트 등록 필요');
+
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
@@ -53,6 +59,7 @@ export class HousesService {
       });
 
       const house = await this.houseRepository.create({
+        userId: user.id,
         ...createHouseDto,
         images,
       });

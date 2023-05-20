@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -17,6 +18,9 @@ import { FindAllHouseDto } from './dto/findall.house.dto';
 import { CreateHouseDto } from './dto/create.house.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'common/multerOption';
+import { AccessTokenGuard } from 'src/auth/jwt/access.guard';
+import { GetUser } from 'common/decorator/get.user.decorator';
+import { User } from '../entities/user.entity';
 
 @Controller('houses')
 export class HousesController {
@@ -30,13 +34,15 @@ export class HousesController {
   }
 
   @Post('/')
+  @UseGuards(AccessTokenGuard)
   @UseInterceptors(FilesInterceptor('images', 10, multerOptions as any))
   @UsePipes(ValidationPipe)
   async createHouse(
     @Body() createHouseDto: CreateHouseDto,
+    @GetUser() user: User,
     @UploadedFiles() files: Array<Express.MulterS3.File>,
   ) {
-    await this.housesService.createHouse(createHouseDto, files);
+    await this.housesService.createHouse(user, createHouseDto, files);
   }
 
   @HttpCode(HttpStatus.OK)
