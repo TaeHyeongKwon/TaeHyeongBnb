@@ -13,7 +13,6 @@ export class CreateHouseDto {
   @IsString()
   address: string;
 
-  @IsNotEmpty()
   @IsString()
   university: string;
 
