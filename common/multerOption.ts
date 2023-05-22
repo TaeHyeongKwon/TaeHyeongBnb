@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { BadRequestException } from '@nestjs/common';
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
@@ -34,3 +34,16 @@ export const multerOptions = multer({
   fileFilter: fileFilter,
   limits: { fileSize: 10 * 1024 * 1024, files: 10 },
 });
+
+//@aws-sdk/client-s3의 file제거 참조 페이지
+//https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/deleteobjectcommand.html
+export const deleteImageInS3 = async (toBeDeletedImage) => {
+  const cutOutUrl = toBeDeletedImage.url.split('/');
+  const fileName = cutOutUrl[cutOutUrl.length - 1];
+  const folderName = cutOutUrl[cutOutUrl.length - 2];
+  const key = folderName.concat('/', fileName);
+
+  const command = new DeleteObjectCommand({ Bucket: bucket, Key: key });
+
+  await s3.send(command);
+};

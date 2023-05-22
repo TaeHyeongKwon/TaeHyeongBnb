@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
 
-export class CreateHouseDto {
+export class UpdateHouseDto {
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -21,6 +21,6 @@ export class CreateHouseDto {
   houseType: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumberString()
   pricePerDay: number;
 }
