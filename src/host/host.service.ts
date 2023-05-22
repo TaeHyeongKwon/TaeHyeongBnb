@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   Inject,
   Injectable,
@@ -36,6 +37,10 @@ export class HostService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const existHost = await this.hostRepository.findOne({
+        where: { userId },
+      });
+      if (existHost) throw new ConflictException('이미 등록한 호스트');
       const hostInfo = await this.hostRepository.create({
         userId,
         ...createHostDto,
