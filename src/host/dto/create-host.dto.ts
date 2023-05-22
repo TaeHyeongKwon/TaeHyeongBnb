@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
 
 export class CreateHostDto {
   @IsString()
@@ -10,6 +10,6 @@ export class CreateHostDto {
   birth_date: string;
 
   @IsNotEmpty()
-  @IsInt()
+  @IsNumberString()
   phone_number: number;
 }
