@@ -3,8 +3,10 @@ import {
   ConflictException,
   ForbiddenException,
   HttpException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { FindAllHouseDto } from './dto/findall.house.dto';
 import { House } from '../entities/house.entity';
@@ -21,6 +23,7 @@ export class HousesService {
   constructor(
     @InjectRepository(House) private houseRepository: Repository<House>,
     private dataSource: DataSource,
+    @Inject(forwardRef(() => ReservationsService))
     private reservationService: ReservationsService,
   ) {}
 
