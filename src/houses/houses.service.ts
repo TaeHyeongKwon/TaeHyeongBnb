@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   HttpException,
   Injectable,
@@ -13,12 +14,14 @@ import { CreateHouseDto } from './dto/create.house.dto';
 import { User } from 'src/entities/user.entity';
 import { deleteImageInS3 } from 'common/multerOption';
 import { UpdateHouseDto } from './dto/update.house.dto';
+import { ReservationsService } from '../reservations/reservations.service';
 
 @Injectable()
 export class HousesService {
   constructor(
     @InjectRepository(House) private houseRepository: Repository<House>,
     private dataSource: DataSource,
+    private reservationService: ReservationsService,
   ) {}
 
   async findHouseList(findAllHouseDto: FindAllHouseDto): Promise<object[]> {
@@ -164,5 +167,25 @@ export class HousesService {
 
     //삭제한 이미지를 S3에서도 제거
     await deleteImageInS3(toBeDeletedImage);
+  }
+
+  async deleteHouse(id: number, userId: number): Promise<{ msg: string }> {
+    const houseInfo = await this.findHouse(id);
+
+    if (houseInfo.userId !== userId)
+      throw new ForbiddenException('삭제 권한 없음');
+
+    const existReservation =
+      await this.reservationService.getReservationByHouseId(id);
+
+    if (existReservation.length > 0)
+      throw new ConflictException('예약이 존재하는 숙소는 삭제 불가');
+
+    await this.houseRepository.delete(id);
+
+    for (const toBeDeletedImage of houseInfo.images)
+      await deleteImageInS3(toBeDeletedImage);
+
+    return { msg: '삭제완료' };
   }
 }
