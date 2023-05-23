@@ -59,4 +59,9 @@ export class ReservationsService {
       .where('reservation.userId = :userId', { userId })
       .getRawMany();
   }
+
+  //숙소ID로 예약 조회
+  async getReservationByHouseId(houseId: number): Promise<Reservation[]> {
+    return await this.reservationRepository.find({ where: { houseId } });
+  }
 }
