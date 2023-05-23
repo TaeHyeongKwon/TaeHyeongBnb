@@ -1,20 +1,41 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { LessThan, MoreThan, Repository } from 'typeorm';
 import { ReservationInfo } from './interface/reservation.interface';
+import { HousesService } from 'src/houses/houses.service';
 
 @Injectable()
 export class ReservationsService {
   constructor(
     @InjectRepository(Reservation)
     private reservationRepository: Repository<Reservation>,
+    @Inject(forwardRef(() => HousesService))
+    private housesService: HousesService,
   ) {}
 
   //예약정보 저장
   async createReservation(
     reservationInfo: ReservationInfo,
   ): Promise<ReservationInfo> {
+    //해당 숙소가 존재하는지 확인
+    const existHouse = await this.housesService.findHouse(
+      reservationInfo.houseId,
+    );
+    if (!existHouse) throw new NotFoundException('없는 숙소');
+
+    //오늘 보다 이전인 check-in예약은 불가능
+    const today = new Date().toISOString().split('T')[0];
+    if (reservationInfo.check_in <= today)
+      throw new BadRequestException('당일 이전의 check-in예약은 불가능');
+
     //중복날짜 확인
     const existReservation = await this.findDupicatedReservation(
       reservationInfo,
@@ -50,6 +71,7 @@ export class ReservationsService {
       .createQueryBuilder('reservation')
       .leftJoinAndSelect('reservation.house', 'house')
       .select([
+        'reservation.id',
         'reservation.houseId',
         'reservation.check_in',
         'reservation.check_out',
@@ -63,5 +85,30 @@ export class ReservationsService {
   //숙소ID로 예약 조회
   async getReservationByHouseId(houseId: number): Promise<Reservation[]> {
     return await this.reservationRepository.find({ where: { houseId } });
+  }
+
+  //예약ID로 조회
+  async getReservation(id: number): Promise<Reservation> {
+    const existReservation = await this.reservationRepository.findOne({
+      where: { id },
+    });
+    if (!existReservation) throw new NotFoundException('예약 정보 없음');
+
+    return existReservation;
+  }
+
+  //예약 최소하기
+  async deleteReservation(id: number, userId: number): Promise<{ msg }> {
+    const existReservation = await this.getReservation(id);
+    if (existReservation.userId !== userId)
+      throw new ForbiddenException('취소 권한 없음');
+
+    const today = new Date().toISOString().split('T')[0];
+    if (existReservation.check_in <= today)
+      throw new BadRequestException('취소 가능 날짜 아님');
+
+    await this.reservationRepository.delete(id);
+
+    return { msg: '취소완료' };
   }
 }
