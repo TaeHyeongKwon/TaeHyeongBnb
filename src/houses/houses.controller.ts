@@ -98,4 +98,11 @@ export class HousesController {
   ) {
     await this.housesService.deleteImage(id, Number(query.key), user.id);
   }
+
+  //숙소 등록취소하기
+  @Delete(':id')
+  @UseGuards(AccessTokenGuard)
+  async deleteHouse(@Param('id') id: number, @GetUser() user: User) {
+    return await this.housesService.deleteHouse(id, user.id);
+  }
 }
