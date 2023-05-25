@@ -12,6 +12,8 @@ import { HousesModule } from './houses/houses.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { HostModule } from './host/host.module';
 import { Host } from './entities/host.entity';
+import { ManagerModule } from './manager/manager.module';
+import { Manager } from './entities/manager.entity';
 
 @Module({
   imports: [
@@ -22,13 +24,14 @@ import { Host } from './entities/host.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, House, Reservation, Host],
+      entities: [User, House, Reservation, Host, Manager],
       synchronize: true,
     }),
     AuthModule,
     HousesModule,
     ReservationsModule,
     HostModule,
+    ManagerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
