@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ManagerLoginDto } from './dto/manager.login.dto';
 import { ManagerSignUpDto } from './dto/manager.signup.dto';
 import { Manager } from '../entities/manager.entity';
@@ -6,14 +11,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ManagerTokenPayload } from './jwtmanager/m.jwt.payload.interface';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 const { M_ACCESS_SECRET, M_REFRESH_SECREY, M_HASHING_SOLT } = process.env;
 
 @Injectable()
 export class ManagerService {
-  jwtService: any;
   constructor(
     @InjectRepository(Manager) private managerRepository: Repository<Manager>,
+    private jwtService: JwtService,
   ) {}
   async managerSignUp(managerSignInfo: ManagerSignUpDto): Promise<Manager> {
     const existEmail = await this.managerRepository.findOne({
@@ -47,7 +53,34 @@ export class ManagerService {
     return refreshToken;
   }
 
-  async managerLogin(managerLoginDto: ManagerLoginDto) {
-    return 'This action adds a new manager';
+  async managerLogin(
+    managerLoginDto: ManagerLoginDto,
+  ): Promise<{ managerAccessToken: string; managerRefreshToken: string }> {
+    const existManager = await this.managerRepository.findOne({
+      where: { email: managerLoginDto.email },
+    });
+
+    if (!existManager) throw new NotFoundException('email을 확인해 주세요.');
+
+    const validatePassword = await bcrypt.compare(
+      managerLoginDto.password,
+      existManager.password,
+    );
+
+    if (!validatePassword)
+      throw new BadRequestException('password를 확인해 주세요');
+
+    const payload: ManagerTokenPayload = {
+      id: existManager.id,
+      name: existManager.name,
+    };
+
+    const managerAccessToken: string = await this.createManagerAccess(payload);
+
+    const managerRefreshToken: string = await this.createManagerRefresh(
+      payload,
+    );
+
+    return { managerAccessToken, managerRefreshToken };
   }
 }
