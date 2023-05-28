@@ -83,4 +83,11 @@ export class ManagerService {
 
     return { managerAccessToken, managerRefreshToken };
   }
+
+  async tokenValidateManager(payload: ManagerTokenPayload) {
+    return await this.managerRepository.findOne({
+      where: { id: payload.id },
+      select: ['id', 'name'],
+    });
+  }
 }
