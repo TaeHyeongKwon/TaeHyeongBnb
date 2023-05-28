@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  UnauthorizedException,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -81,7 +80,7 @@ export class AuthService {
 
     //비밀번호 불일치 시 에러
     if (!validatePassword)
-      throw new UnauthorizedException('password를 확인해 주세요');
+      throw new BadRequestException('password를 확인해 주세요');
 
     //토큰에 넣어줄 정보 선언
     const payload: Payload = { id: existUser.id, nickname: existUser.nickname };
