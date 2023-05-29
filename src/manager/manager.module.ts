@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { Manager } from '../entities/manager.entity';
 import { PassportModule } from '@nestjs/passport';
 import { ManagerAccessStrategy } from './jwtmanager/manager.access.strategy';
+import { ManagerRefreshStrategy } from './jwtmanager/manager.refresh.strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { ManagerAccessStrategy } from './jwtmanager/manager.access.strategy';
   ],
   exports: [TypeOrmModule, PassportModule, ManagerService],
   controllers: [ManagerController],
-  providers: [ManagerService, ManagerAccessStrategy],
+  providers: [ManagerService, ManagerAccessStrategy, ManagerRefreshStrategy],
 })
 export class ManagerModule {}
