@@ -17,6 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CheckSmsDto } from './dto/check-sms.dto';
+import { GetHostListDto } from './dto/get-hostlist.dto';
 const {
   NAVER_API_ACCESS_KEY_ID,
   NAVER_API_SECRET_KEY,
@@ -162,5 +163,15 @@ export class HostService {
     if (certificationCode !== checkSmsDto.checkCode)
       throw new BadRequestException('인증 코드가 일치하지 않습니다.');
     return true;
+  }
+
+  //신청 최신순으로 뽑아주기,
+  async getHostList(getHostListDto: GetHostListDto) {
+    if (!getHostListDto.page) getHostListDto.page = '1';
+    return await this.hostRepository.find({
+      order: { id: 'DESC' },
+      skip: 20 * (Number(getHostListDto.page) - 1),
+      take: 20,
+    });
   }
 }
