@@ -4,6 +4,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateHostDto } from './dto/create-host.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -165,7 +166,7 @@ export class HostService {
     return true;
   }
 
-  //신청 최신순으로 뽑아주기,
+  //호스트 신청 리스트 최신순으로 뽑아주기,
   async getHostList(getHostListDto: GetHostListDto) {
     if (!getHostListDto.page) getHostListDto.page = '1';
     return await this.hostRepository.find({
@@ -173,5 +174,35 @@ export class HostService {
       skip: 20 * (Number(getHostListDto.page) - 1),
       take: 20,
     });
+  }
+
+  //호스트 신청 승인
+  async updateHostApproval(id: number) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const existApproval = await this.hostRepository.findOne({
+        where: { id },
+      });
+      if (!existApproval)
+        throw new NotFoundException('존재하지 않는 호스트 신청');
+      //신청 승인을 false에서 true로 업데이트
+      await queryRunner.manager.update(Host, { id }, { approval: true });
+      //User테이블의 인증항목 또한 true로 업데이트
+      await queryRunner.manager.update(
+        User,
+        { id: existApproval.userId },
+        { host_certification: true },
+      );
+      await queryRunner.commitTransaction();
+      return { msg: '승인 완료' };
+    } catch (err) {
+      console.error(err);
+      await queryRunner.rollbackTransaction();
+      throw new HttpException('호스트 인증 트랜잭션 롤백 에러', 500);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
