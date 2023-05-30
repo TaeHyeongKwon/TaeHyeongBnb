@@ -7,6 +7,8 @@ import {
   UseGuards,
   Get,
   Query,
+  Put,
+  Param,
 } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from './dto/create-host.dto';
@@ -51,5 +53,11 @@ export class HostController {
   @UseGuards(ManagerAccessGuard)
   async getHostList(@Query() query: GetHostListDto) {
     return await this.hostService.getHostList(query);
+  }
+
+  @Put('/:id')
+  @UseGuards(ManagerAccessGuard)
+  async updateHostApproval(@Param('id') id: number) {
+    return await this.hostService.updateHostApproval(id);
   }
 }
