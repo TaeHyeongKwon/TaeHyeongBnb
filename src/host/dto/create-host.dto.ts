@@ -11,5 +11,5 @@ export class CreateHostDto {
 
   @IsNotEmpty()
   @IsNumberString()
-  phone_number: number;
+  phone_number: string;
 }
