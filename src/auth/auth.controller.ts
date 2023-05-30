@@ -56,7 +56,7 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post('/refresh-token')
-  async ckeckRefresh(
+  async checkRefresh(
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<Response> {
