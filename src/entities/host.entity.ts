@@ -25,8 +25,8 @@ export class Host {
   @Column({ type: 'date' })
   birth_date: string;
 
-  @Column({ type: 'int' })
-  phone_number: number;
+  @Column({ type: 'varchar' })
+  phone_number: string;
 
   @Column({ type: 'boolean', default: false })
   approval: boolean;
