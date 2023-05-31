@@ -16,7 +16,7 @@ export class House {
   id: number;
 
   @OneToMany(() => Reservation, (reservation) => reservation.house)
-  reservations: Reservation;
+  reservations: Reservation[];
 
   @ManyToOne(() => User, (user) => user.houses)
   @JoinColumn({ name: 'userId' })
