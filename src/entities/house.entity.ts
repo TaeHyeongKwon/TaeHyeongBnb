@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Reservation } from './reservation.entity';
 import { User } from './user.entity';
+import { Review } from './review.entity';
 
 @Entity()
 export class House {
@@ -15,11 +16,14 @@ export class House {
   id: number;
 
   @OneToMany(() => Reservation, (reservation) => reservation.house)
-  reservation: Reservation;
+  reservations: Reservation[];
 
-  @ManyToOne(() => User, (user) => user.house)
+  @ManyToOne(() => User, (user) => user.houses)
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @OneToMany(() => Review, (review) => review.house)
+  reviews: Review[];
 
   @Column({ type: 'int' })
   userId: number;

@@ -8,6 +8,7 @@ import {
 import { Reservation } from './reservation.entity';
 import { Host } from './host.entity';
 import { House } from './house.entity';
+import { Review } from './review.entity';
 
 @Entity()
 export class User {
@@ -21,7 +22,10 @@ export class User {
   host: Host;
 
   @OneToMany(() => House, (house) => house.user)
-  house: House[];
+  houses: House[];
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 
   @Column({ type: 'varchar', length: 100 })
   email: string;
