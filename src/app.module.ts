@@ -14,6 +14,7 @@ import { HostModule } from './host/host.module';
 import { Host } from './entities/host.entity';
 import { ManagerModule } from './manager/manager.module';
 import { Manager } from './entities/manager.entity';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { Manager } from './entities/manager.entity';
     ReservationsModule,
     HostModule,
     ManagerModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
