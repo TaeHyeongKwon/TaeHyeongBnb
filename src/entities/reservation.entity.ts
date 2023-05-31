@@ -18,7 +18,7 @@ export class Reservation {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => House, (house) => house.reservation)
+  @ManyToOne(() => House, (house) => house.reservations)
   @JoinColumn({ name: 'houseId' })
   house: House;
 
