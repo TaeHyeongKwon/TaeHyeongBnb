@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { House } from './house.entity';
+import { Review } from './review.entity';
 
 @Entity()
 export class Reservation {
@@ -21,6 +23,9 @@ export class Reservation {
   @ManyToOne(() => House, (house) => house.reservations)
   @JoinColumn({ name: 'houseId' })
   house: House;
+
+  @OneToOne(() => Review, (review) => review.reservation)
+  review: Review;
 
   @Column({ type: 'int' })
   houseId: number;
