@@ -15,6 +15,7 @@ import { Host } from './entities/host.entity';
 import { ManagerModule } from './manager/manager.module';
 import { Manager } from './entities/manager.entity';
 import { ReviewModule } from './review/review.module';
+import { Review } from './entities/review.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { ReviewModule } from './review/review.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, House, Reservation, Host, Manager],
+      entities: [User, House, Reservation, Host, Manager, Review],
       synchronize: true,
     }),
     AuthModule,
