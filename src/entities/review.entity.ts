@@ -1,5 +1,6 @@
 import {
   Column,
+  Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -9,6 +10,7 @@ import { User } from './user.entity';
 import { House } from './house.entity';
 import { Reservation } from './reservation.entity';
 
+@Entity()
 export class Review {
   @PrimaryGeneratedColumn()
   id: number;
