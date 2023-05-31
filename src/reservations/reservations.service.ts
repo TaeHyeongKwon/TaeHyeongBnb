@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { FindOneOptions, LessThan, MoreThan, Repository } from 'typeorm';
 import { ReservationInfo } from './interface/reservation.interface';
 import { HousesService } from 'src/houses/houses.service';
 
@@ -110,5 +110,11 @@ export class ReservationsService {
     await this.reservationRepository.delete(id);
 
     return { msg: '취소완료' };
+  }
+
+  async findByFields(
+    options: FindOneOptions<Reservation>,
+  ): Promise<Reservation | undefined> {
+    return await this.reservationRepository.findOne(options);
   }
 }
