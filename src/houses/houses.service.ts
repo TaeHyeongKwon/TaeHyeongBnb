@@ -89,7 +89,6 @@ export class HousesService {
   }
 
   async findHouse(id: number): Promise<House> {
-    console.log(id);
     const houseInfo = await this.houseRepository.findOne({ where: { id } });
     if (!houseInfo) throw new NotFoundException('없는 숙소 입니다.');
     return houseInfo;
