@@ -6,7 +6,7 @@ import {
 import { CreateReviewDto } from './dto/create-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from '../entities/review.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { HousesService } from 'src/houses/houses.service';
 import { ReservationsService } from 'src/reservations/reservations.service';
 
@@ -64,5 +64,11 @@ export class ReviewService {
     await this.housesService.findHouse(houseId);
 
     return await this.reviewRepository.find({ where: { houseId } });
+  }
+
+  async findByFields(
+    options: FindOneOptions<Review>,
+  ): Promise<Review | undefined> {
+    return await this.reviewRepository.findOne(options);
   }
 }
