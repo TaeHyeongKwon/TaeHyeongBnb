@@ -9,6 +9,7 @@ import {
 import { User } from './user.entity';
 import { House } from './house.entity';
 import { Reservation } from './reservation.entity';
+import { Comment } from './comment.entity';
 
 @Entity()
 export class Review {
@@ -26,6 +27,9 @@ export class Review {
   @OneToOne(() => Reservation, (reservation) => reservation.review)
   @JoinColumn({ name: 'reservationId' })
   reservation: Reservation;
+
+  @OneToOne(() => Comment, (comment) => comment.review)
+  comment: Comment;
 
   @Column({ type: 'int' })
   userId: number;
