@@ -19,7 +19,7 @@ export class Comment {
   user: User;
 
   @OneToOne(() => Review, (review) => review.comment)
-  @JoinColumn({ name: ' reviewId' })
+  @JoinColumn({ name: 'reviewId' })
   review: Review;
 
   @Column({ type: 'int' })
