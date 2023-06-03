@@ -16,5 +16,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
   controllers: [ReviewController],
   providers: [ReviewService],
+  exports: [ReviewService],
 })
 export class ReviewModule {}
