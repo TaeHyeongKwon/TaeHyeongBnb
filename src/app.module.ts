@@ -17,6 +17,7 @@ import { Manager } from './entities/manager.entity';
 import { ReviewModule } from './review/review.module';
 import { Review } from './entities/review.entity';
 import { CommentModule } from './comment/comment.module';
+import { Comment } from './entities/comment.entity';
 
 @Module({
   imports: [
