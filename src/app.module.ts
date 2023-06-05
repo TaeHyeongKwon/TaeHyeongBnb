@@ -18,6 +18,7 @@ import { ReviewModule } from './review/review.module';
 import { Review } from './entities/review.entity';
 import { CommentModule } from './comment/comment.module';
 import { Comment } from './entities/comment.entity';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -30,6 +31,21 @@ import { Comment } from './entities/comment.entity';
       database: process.env.DB_NAME,
       entities: [User, House, Reservation, Host, Manager, Review, Comment],
       synchronize: true,
+    }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: 'smtp.naver.com',
+          port: 587,
+          auth: {
+            user: `${process.env.EMAILADDRESS}`,
+            pass: `${process.env.EMAILPASSWORD}`,
+          },
+        },
+        defaults: {
+          from: `'TaeHyeongBNB' <${process.env.EMAILADDRESS}>`,
+        },
+      }),
     }),
     AuthModule,
     HousesModule,

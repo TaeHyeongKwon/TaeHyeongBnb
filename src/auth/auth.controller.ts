@@ -19,6 +19,7 @@ import { Request, Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { Payload } from './jwt/jwt.payload.interface';
 import { RefreshTokenGuard } from './jwt/refresh.guard';
+import { SendEmailDto } from './dto/sendemail.dto';
 const { KAKAO_API_KEY, CODE_REDIRECT_URI } = process.env;
 
 @Controller('auth')
@@ -92,5 +93,11 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
     });
     return res.json({ msg: '로그인 성공' });
+  }
+
+  @Post('send-email')
+  @UsePipes(ValidationPipe)
+  async sendEmailAuthentication(@Body() sendEmailDto: SendEmailDto) {
+    return await this.authService.sendEmailAuthentication(sendEmailDto.email);
   }
 }

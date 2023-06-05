@@ -14,13 +14,14 @@ import { LoginDto } from './dto/login.dto';
 import { HttpService } from '@nestjs/axios';
 // import axios from 'axios';
 import { firstValueFrom } from 'rxjs';
-
+import { MailerService } from '@nestjs-modules/mailer';
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
     private http: HttpService,
+    private mailerService: MailerService,
   ) {}
 
   //회원가입
@@ -160,5 +161,15 @@ export class AuthService {
     const refreshToken = await this.createRefreshToken(payload);
 
     return { accessToken, refreshToken };
+  }
+
+  //이메일 전송 테스트
+  async sendEmailAuthentication(email: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Test',
+      text: '테스트',
+    });
+    return { msg: '발송완료' };
   }
 }
