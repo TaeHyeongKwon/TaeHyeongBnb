@@ -9,10 +9,11 @@ import { AccessStrategy } from './jwt/access.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { RefreshStrategy } from './jwt/refresh.strategy';
 import { HttpModule } from '@nestjs/axios';
+import { Authentication } from 'src/entities/authentication.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Authentication]),
     JwtModule.register({
       secret: process.env.ACCESS_JWT_SECRET,
       signOptions: { expiresIn: '5m' },
