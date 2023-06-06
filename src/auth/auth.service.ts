@@ -15,6 +15,7 @@ import { HttpService } from '@nestjs/axios';
 // import axios from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { MailerService } from '@nestjs-modules/mailer';
+import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class AuthService {
   constructor(
@@ -163,13 +164,25 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  //이메일 전송 테스트
+  //이메일 인증코드 생성
+  async createEmailCode() {
+    return uuidv4().substring(0, 6);
+  }
+
+  //이메일 인증코드 전송 및 DB에 저장
   async sendEmailAuthentication(email: string) {
+    const code = await this.createEmailCode();
+
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Test',
-      text: '테스트',
+      subject: 'TaeHyeongBNB 이메일 인증코드',
+      text: `TaeHyeongBNB 이메일 인증코드는
+
+      ${code} 
+      
+      입니다.`,
     });
+
     return { msg: '발송완료' };
   }
 }
