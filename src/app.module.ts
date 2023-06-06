@@ -19,6 +19,7 @@ import { Review } from './entities/review.entity';
 import { CommentModule } from './comment/comment.module';
 import { Comment } from './entities/comment.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { Authentication } from './entities/authentication.entity';
 
 @Module({
   imports: [
@@ -29,7 +30,16 @@ import { MailerModule } from '@nestjs-modules/mailer';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, House, Reservation, Host, Manager, Review, Comment],
+      entities: [
+        User,
+        House,
+        Reservation,
+        Host,
+        Manager,
+        Review,
+        Comment,
+        Authentication,
+      ],
       synchronize: true,
     }),
     MailerModule.forRootAsync({
