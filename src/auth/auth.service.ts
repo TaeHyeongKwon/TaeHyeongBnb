@@ -16,9 +16,14 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Authentication } from '../entities/authentication.entity';
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(Authentication)
+    private authenticationRepository: Repository<Authentication>,
     private userService: UserService,
     private jwtService: JwtService,
     private http: HttpService,
@@ -171,8 +176,10 @@ export class AuthService {
 
   //이메일 인증코드 전송 및 DB에 저장
   async sendEmailAuthentication(email: string) {
+    //인증코드 생성
     const code = await this.createEmailCode();
 
+    //인증코드 메일 전송
     await this.mailerService.sendMail({
       to: email,
       subject: 'TaeHyeongBNB 이메일 인증코드',
@@ -182,6 +189,19 @@ export class AuthService {
       
       입니다.`,
     });
+
+    //인증코드와 시간을 DB에 저장
+    const createdAt = new Date();
+    const expiration = new Date();
+    expiration.setHours(expiration.getHours() + 24);
+
+    const emailAuthentication = this.authenticationRepository.create({
+      code,
+      createdAt,
+      expiration,
+    });
+
+    await this.authenticationRepository.save(emailAuthentication);
 
     return { msg: '발송완료' };
   }
