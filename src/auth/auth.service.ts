@@ -16,18 +16,16 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuidv4 } from 'uuid';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Authentication } from '../entities/authentication.entity';
+import { AuthenticationService } from './authentication.service';
+import { MoreThan } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Authentication)
-    private authenticationRepository: Repository<Authentication>,
     private userService: UserService,
     private jwtService: JwtService,
     private http: HttpService,
     private mailerService: MailerService,
+    private authenticationService: AuthenticationService,
   ) {}
 
   //회원가입
@@ -190,19 +188,25 @@ export class AuthService {
       입니다.`,
     });
 
-    //인증코드와 시간을 DB에 저장
-    const createdAt = new Date();
-    const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 24);
+    //DB저장
+    return await this.authenticationService.saveAuthenticationCode(code);
+  }
 
-    const emailAuthentication = this.authenticationRepository.create({
-      code,
-      createdAt,
-      expiration,
-    });
+  //인증코드 체크
+  async checkAuthenticationCode(code: string) {
+    const thisTime = new Date();
+    //소문자로 변경한 코드와, 만료시간이 현재시간 기준 지나지 않은 정보를 조회(정보가 없다면 에러)
+    const existcheckAuthentication =
+      await this.authenticationService.findByFileds({
+        where: {
+          code: code.toLocaleLowerCase(),
+          expiration: MoreThan(thisTime),
+        },
+      });
 
-    await this.authenticationRepository.save(emailAuthentication);
+    if (!existcheckAuthentication)
+      throw new NotFoundException('인증 정보 없음');
 
-    return { msg: '발송완료' };
+    return { msg: '인증 성공' };
   }
 }
