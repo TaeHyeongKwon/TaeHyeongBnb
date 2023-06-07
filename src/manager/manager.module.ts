@@ -16,7 +16,7 @@ import { ManagerRefreshStrategy } from './jwtmanager/manager.refresh.strategy';
       signOptions: { expiresIn: '20m' },
     }),
     JwtModule.register({
-      secret: process.env.M_REFRESH_SECREY,
+      secret: process.env.M_REFRESH_SECRET,
       signOptions: { expiresIn: '24h' },
     }),
     PassportModule,
