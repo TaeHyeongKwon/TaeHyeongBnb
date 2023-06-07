@@ -20,6 +20,7 @@ import { CommentModule } from './comment/comment.module';
 import { Comment } from './entities/comment.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { Authentication } from './entities/authentication.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { Authentication } from './entities/authentication.entity';
         },
       }),
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     HousesModule,
     ReservationsModule,
