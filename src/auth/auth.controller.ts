@@ -20,6 +20,7 @@ import { LoginDto } from './dto/login.dto';
 import { Payload } from './jwt/jwt.payload.interface';
 import { RefreshTokenGuard } from './jwt/refresh.guard';
 import { SendEmailDto } from './dto/sendemail.dto';
+import { CheckEmailDto } from './dto/checkemail.dto';
 const { KAKAO_API_KEY, CODE_REDIRECT_URI } = process.env;
 
 @Controller('auth')
@@ -99,5 +100,10 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   async sendEmailAuthentication(@Body() sendEmailDto: SendEmailDto) {
     return await this.authService.sendEmailAuthentication(sendEmailDto.email);
+  }
+
+  @Post('check-code')
+  async checkAuthenticationCode(@Body() checkEmailDto: CheckEmailDto) {
+    return await this.authService.checkAuthenticationCode(checkEmailDto.code);
   }
 }
