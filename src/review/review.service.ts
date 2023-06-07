@@ -63,7 +63,10 @@ export class ReviewService {
     //해당 숙소 페이지가 있는지 확인
     await this.housesService.findHouse(houseId);
 
-    return await this.reviewRepository.find({ where: { houseId } });
+    return await this.reviewRepository.find({
+      where: { houseId },
+      relations: ['comment'],
+    });
   }
 
   async findByFields(
