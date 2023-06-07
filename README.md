@@ -65,9 +65,9 @@ TypeScript, NestJS, TypeOrm, MySql, JWT, Multer, AWS-S3, AWS-EC2
 |    Post    |  /manager/M_LOGIN_URI  |      관리자 계정생성(M_SIGNUP_URI는 env에)      |               x                |
 |    Post    |  /manager/M_LOGIN_URI  |     관리자 계정 로그인(M_LOGIN_URI는 env에)     |          관리자 계정           |
 |    Post    | /manager/M_REFRESH_URI | 관리자 accessToken재발급(M_REFRESH_URI는 env에) |          관리자 계정           |
-|    Post    |         /host          |                호스트 등록 신청                 |          사용자 계정           |
-|    Post    |     /host/send-sms     |           호스트 휴대폰 인증번호 발송           |          사용자 계정           |
-|    Post    |    /host/check-sms     |             호스트 휴대폰 인증 확인             |          사용자 계정           |
+|    Post    |         /host          |                호스트 등록 신청                 |      사용자or카카오사용자      |
+|    Post    |     /host/send-sms     |           호스트 휴대폰 인증번호 발송           |      사용자or카카오사용자      |
+|    Post    |    /host/check-sms     |             호스트 휴대폰 인증 확인             |      사용자or카카오사용자      |
 |    Get     |       /host/list       |           호스트 등록신청 리스트 조회           |          관리자 계정           |
 |    Put     |       /host/{id}       |                 호스트 인증하기                 |          관리자 계정           |
 |    Get     |      /houses/list      |              숙소 매물 리스트 조회              |               x                |
