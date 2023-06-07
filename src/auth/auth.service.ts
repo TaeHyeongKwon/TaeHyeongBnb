@@ -193,7 +193,7 @@ export class AuthService {
     //인증코드와 시간을 DB에 저장
     const createdAt = new Date();
     const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 24);
+    expiration.setHours(expiration.getHours() + 1);
 
     const emailAuthentication = this.authenticationRepository.create({
       code,
