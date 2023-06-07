@@ -7,6 +7,7 @@ import {
   ValidationPipe,
   UseGuards,
   Get,
+  Delete,
 } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create.reservation.dto';
@@ -38,11 +39,17 @@ export class ReservationsController {
     return this.reservationsService.createReservation(reservationInfo);
   }
 
-  //사용자 예약정로 리스트 조회 API
+  //사용자 예약정보 리스트 조회 API
   @Get('my')
   getMyReservation(@GetUser() user: User) {
     const userId = user.id;
 
     return this.reservationsService.getMyReservation(userId);
+  }
+
+  //예약 취소하기 API
+  @Delete(':id')
+  deleteReservation(@GetUser() user: User, @Param('id') id: number) {
+    return this.reservationsService.deleteReservation(id, user.id);
   }
 }
