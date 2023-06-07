@@ -9,7 +9,8 @@ import { AccessStrategy } from './jwt/access.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { RefreshStrategy } from './jwt/refresh.strategy';
 import { HttpModule } from '@nestjs/axios';
-import { Authentication } from 'src/entities/authentication.entity';
+import { Authentication } from '../entities/authentication.entity';
+import { AuthenticationService } from './authentication.service';
 
 @Module({
   imports: [
@@ -27,6 +28,12 @@ import { Authentication } from 'src/entities/authentication.entity';
   ],
   exports: [TypeOrmModule, AccessStrategy, PassportModule, UserService],
   controllers: [AuthController],
-  providers: [AuthService, UserService, AccessStrategy, RefreshStrategy],
+  providers: [
+    AuthService,
+    UserService,
+    AccessStrategy,
+    RefreshStrategy,
+    AuthenticationService,
+  ],
 })
 export class AuthModule {}
