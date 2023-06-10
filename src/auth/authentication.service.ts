@@ -35,7 +35,7 @@ export class AuthenticationService {
   }
 
   //만료시간이 지난 데이터를 2시간마다 자동삭제
-  @Cron('* * */2 * * *')
+  @Cron('0 0 */2 * * *')
   async deleteExpiredCodeAuto() {
     const thisTime = new Date();
     const existExpiredCodeDate = await this.authenticationRepository.find({
