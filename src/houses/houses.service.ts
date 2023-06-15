@@ -14,7 +14,7 @@ import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateHouseDto } from './dto/create.house.dto';
 import { User } from 'src/entities/user.entity';
-import { deleteImageInS3 } from 'common/multerOption';
+import { deleteImageInS3 } from '../../common/multerOption';
 import { UpdateHouseDto } from './dto/update.house.dto';
 import { ReservationsService } from '../reservations/reservations.service';
 

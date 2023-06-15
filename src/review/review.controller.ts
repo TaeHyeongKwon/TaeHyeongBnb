@@ -12,7 +12,7 @@ import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { AccessTokenGuard } from '../auth/jwt/access.guard';
 import { GetUser } from 'common/decorator/get.user.decorator';
-import { User } from 'src/entities/user.entity';
+import { User } from '../entities/user.entity';
 
 @Controller('review')
 export class ReviewController {

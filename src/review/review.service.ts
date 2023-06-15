@@ -7,8 +7,8 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from '../entities/review.entity';
 import { FindOneOptions, Repository } from 'typeorm';
-import { HousesService } from 'src/houses/houses.service';
-import { ReservationsService } from 'src/reservations/reservations.service';
+import { HousesService } from '../houses/houses.service';
+import { ReservationsService } from '../reservations/reservations.service';
 
 @Injectable()
 export class ReviewService {

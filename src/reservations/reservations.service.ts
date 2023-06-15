@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { FindOneOptions, LessThan, MoreThan, Repository } from 'typeorm';
 import { ReservationInfo } from './interface/reservation.interface';
-import { HousesService } from 'src/houses/houses.service';
+import { HousesService } from '../houses/houses.service';
 
 @Injectable()
 export class ReservationsService {
