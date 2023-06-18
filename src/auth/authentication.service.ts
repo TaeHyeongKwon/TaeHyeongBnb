@@ -45,5 +45,6 @@ export class AuthenticationService {
       await this.authenticationRepository.delete({
         expiration: LessThan(thisTime),
       });
+    return;
   }
 }
