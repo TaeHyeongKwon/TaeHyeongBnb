@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from './dto/create-host.dto';
-import { GetUser } from 'common/decorator/get.user.decorator';
+import { GetUser } from '../../common/decorator/get.user.decorator';
 import { User } from '../entities/user.entity';
 import { AccessTokenGuard } from '../auth/jwt/access.guard';
 import { SendSmsDto } from './dto/send-sms.dto';
 import { CheckSmsDto } from './dto/check-sms.dto';
-import { ManagerAccessGuard } from 'src/manager/jwtmanager/manager.access.guard';
+import { ManagerAccessGuard } from '../manager/jwtmanager/manager.access.guard';
 import { GetHostListDto } from './dto/get-hostlist.dto';
 
 @Controller('host')

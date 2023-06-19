@@ -14,7 +14,7 @@ import { ManagerLoginDto } from './dto/manager.login.dto';
 import { ManagerSignUpDto } from './dto/manager.signup.dto';
 import { Response } from 'express';
 import { ManagerRefreshGuard } from './jwtmanager/manager.refresh.guard';
-import { GetUser } from 'common/decorator/get.user.decorator';
+import { GetUser } from '../../common/decorator/get.user.decorator';
 import { Manager } from '../entities/manager.entity';
 import { ManagerTokenPayload } from './jwtmanager/m.jwt.payload.interface';
 const { M_SIGNUP_URI, M_LOGIN_URI, M_REFRESH_URI } = process.env;
