@@ -12,7 +12,7 @@ export class AccessStrategy extends PassportStrategy(Strategy, 'access') {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       //엑세스토큰 검증 비밀키
-      secretOrKey: process.env.ACCESS_JWT_SECRET,
+      secretOrKey: process.env.ACCESS_JWT_SECRET || 'testAccessSecretKey',
     });
   }
 
