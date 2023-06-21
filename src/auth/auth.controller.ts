@@ -76,16 +76,17 @@ export class AuthController {
   async kakaoRedirect(@Res() res: Response): Promise<void> {
     const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_API_KEY}&redirect_uri=${CODE_REDIRECT_URI}`;
     res.redirect(url);
+    return;
   }
 
   @Get('kakao')
-  async getKakaoInfo(@Query() query: { code }, @Res() res: Response) {
+  async getKakaoInfo(@Query('code') code: string, @Res() res: Response) {
     const apikey = KAKAO_API_KEY;
     const redirectUri = CODE_REDIRECT_URI;
     const loginToken = await this.authService.kakaoLogin(
       apikey,
       redirectUri,
-      query.code,
+      code,
     );
 
     res.setHeader('Authorizetion', 'Bearer ' + loginToken.accessToken);
