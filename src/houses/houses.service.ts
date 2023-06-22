@@ -72,8 +72,7 @@ export class HousesService {
         images,
       });
 
-      const result = await queryRunner.manager.save(house);
-      console.log(result);
+      await queryRunner.manager.save(house);
 
       await queryRunner.commitTransaction();
     } catch (err) {
