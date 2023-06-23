@@ -48,7 +48,7 @@ export class HousesController {
     @GetUser() user: User,
     @UploadedFiles() files: Array<Express.MulterS3.File>,
   ) {
-    await this.housesService.createHouse(user, createHouseDto, files);
+    return await this.housesService.createHouse(user, createHouseDto, files);
   }
 
   //숙소 상세조회
