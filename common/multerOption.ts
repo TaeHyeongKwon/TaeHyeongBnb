@@ -24,7 +24,6 @@ const fileFilter = (req, file, callback) => {
 
 const storage = () => {
   if (process.env.NODE_ENV === 'test') {
-    //   return multer.memoryStorage();
     AWSMock.config.basePath = './testS3';
     const params = { Bucket: 'testBucket' };
     const mockS3 = new AWSMock.S3({ params });
