@@ -2,10 +2,12 @@ import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { BadRequestException } from '@nestjs/common';
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
+import * as AWSMock from 'mock-aws-s3';
+import * as fs from 'fs';
 
 const accessKeyId = process.env.KTH_ACCESKEYID;
 const secretAccessKey = process.env.KTH_SECRETKEYID;
-const bucket = process.env.KTH_S3_BUCKET_NAME;
+let bucket = process.env.KTH_S3_BUCKET_NAME;
 
 const s3 = new S3Client({
   region: 'ap-northeast-2',
@@ -21,16 +23,43 @@ const fileFilter = (req, file, callback) => {
   else callback(new BadRequestException('이미지 형식 아님'), false);
 };
 
-export const multerOptions = multer({
-  storage: multerS3({
+const storage = () => {
+  if (process.env.NODE_ENV === 'test') {
+    //   return multer.memoryStorage();
+    AWSMock.config.basePath = './testS3';
+    const params = { Bucket: 'testBucket' };
+    const mockS3 = new AWSMock.S3({ params });
+
+    mockS3.createBucket(params, function (err) {
+      if (err) {
+        console.error(err);
+      }
+    });
+
+    bucket = params.Bucket;
+
+    return multerS3({
+      s3: mockS3 as unknown as S3Client & AWSMock.S3,
+      bucket,
+      acl: 'public-read',
+      key(req, file, callback) {
+        callback(null, `nest-project/${Date.now() + file.originalname}`);
+      },
+    });
+  }
+
+  return multerS3({
     s3,
     bucket,
     acl: 'public-read',
     key(req, file, callback) {
-      // const imageType = file.mimetype.split('/')[1];
       callback(null, `nest-project/${Date.now() + file.originalname}`);
     },
-  }),
+  });
+};
+
+export const multerOptions = multer({
+  storage: storage(),
   fileFilter: fileFilter,
   limits: { fileSize: 10 * 1024 * 1024, files: 10 },
 });
