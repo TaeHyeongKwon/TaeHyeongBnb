@@ -3,7 +3,6 @@ import { BadRequestException } from '@nestjs/common';
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
 import * as AWSMock from 'mock-aws-s3';
-import * as fs from 'fs';
 
 const accessKeyId = process.env.KTH_ACCESKEYID;
 const secretAccessKey = process.env.KTH_SECRETKEYID;
