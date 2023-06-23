@@ -47,7 +47,7 @@ export class HousesService {
     user: User,
     createHouseDto: CreateHouseDto,
     files: Array<Express.MulterS3.File>,
-  ): Promise<void> {
+  ): Promise<House> {
     if (user.host_certification !== true)
       throw new ForbiddenException('호스트 등록 필요');
 
@@ -72,13 +72,12 @@ export class HousesService {
         images,
       });
 
-      const result = await queryRunner.manager.save(house);
-      console.log(result);
+      const houseInfo = await queryRunner.manager.save(house);
 
       await queryRunner.commitTransaction();
+      return houseInfo;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      //업로드 실행된 이미지 s3에서 제거
       for (const toBeDeletedImage of images) {
         await deleteImageInS3(toBeDeletedImage);
       }

@@ -14,7 +14,7 @@ export class CreateHouseDto {
   address: string;
 
   @IsString()
-  university: string;
+  university?: string;
 
   @IsNotEmpty()
   @IsString()
