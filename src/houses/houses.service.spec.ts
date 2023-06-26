@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { House } from '../entities/house.entity';
 import { FindAllHouseDto, ListSort } from './dto/findall.house.dto';
 import {
+  BadRequestException,
   ForbiddenException,
   HttpException,
   NotFoundException,
@@ -164,6 +165,29 @@ describe('HousesService', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(ForbiddenException);
       expect(e.message).toEqual('호스트 등록 필요');
+    }
+  });
+
+  it('숙소 생성시 이미지 파일 없음 예외 케이스', async () => {
+    const user = new User();
+    user.id = expect.any(Number);
+    user.host_certification = true;
+
+    const createHouseDto: CreateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const files = [];
+
+    try {
+      await houseService.createHouse(user, createHouseDto, files);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+      expect(e.message).toEqual('이미지가 없습니다.');
     }
   });
 
