@@ -248,4 +248,57 @@ describe('HousesService', () => {
       expect(e.message).toEqual('없는 숙소 입니다.');
     }
   });
+
+  it('작성된 숙소 정보 조회 성공 케이스', async () => {
+    const userId = 1;
+    const id = 1;
+
+    const house = {
+      id: 1,
+      userId: 1,
+      name: '테스트 이름',
+      description: '테스트 설명',
+      address: '테스트 주소',
+      houseType: '테스트 종류',
+      pricePerDay: 100000,
+      images: [
+        { key: 1, url: 'image/url/location1' },
+        { key: 2, url: 'image/url/location2' },
+      ],
+    } as House;
+
+    jest.spyOn(houseService, 'findHouse').mockResolvedValue(house);
+
+    const result = await houseService.getWrittenHouseDetail(userId, id);
+
+    expect(result).toEqual(house);
+  });
+
+  it('작성된 숙소 정보 조회 실패 예외 케이스', async () => {
+    const userId = 1;
+    const id = 1;
+
+    const house = {
+      id: 1,
+      userId: 3,
+      name: '테스트 이름',
+      description: '테스트 설명',
+      address: '테스트 주소',
+      houseType: '테스트 종류',
+      pricePerDay: 100000,
+      images: [
+        { key: 1, url: 'image/url/location1' },
+        { key: 2, url: 'image/url/location2' },
+      ],
+    } as House;
+
+    jest.spyOn(houseService, 'findHouse').mockResolvedValue(house);
+
+    try {
+      await houseService.getWrittenHouseDetail(userId, id);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ForbiddenException);
+      expect(e.message).toEqual('매물 수정 권한이 없음');
+    }
+  });
 });
