@@ -51,13 +51,14 @@ export class HousesService {
     if (user.host_certification !== true)
       throw new ForbiddenException('호스트 등록 필요');
 
+    //최소 1개 이상의 이미지가 필요
+    if (!files[0]) throw new BadRequestException('이미지가 없습니다.');
+
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
 
     await queryRunner.startTransaction();
-    //최소 1개 이상의 이미지가 필요
-    if (!files[0]) throw new BadRequestException('이미지가 없습니다.');
 
     const images = files.map((file, index) => {
       const url = file.location;
