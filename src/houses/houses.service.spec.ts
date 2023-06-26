@@ -14,6 +14,7 @@ import { DataSource } from 'typeorm';
 import { CreateHouseDto } from './dto/create.house.dto';
 import { User } from '../entities/user.entity';
 import * as multerFn from '../../common/multerOption';
+import { UpdateHouseDto } from './dto/update.house.dto';
 
 describe('HousesService', () => {
   let houseService: HousesService;
@@ -46,6 +47,7 @@ describe('HousesService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         HousesService,
@@ -299,6 +301,143 @@ describe('HousesService', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(ForbiddenException);
       expect(e.message).toEqual('매물 수정 권한이 없음');
+    }
+  });
+
+  it('숙소 수정하기 성공 케이스', async () => {
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = expect.any(Number);
+
+    const updateHouseDto: UpdateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const files = [
+      { location: 'image/url/location3' },
+      { location: 'image/url/location4' },
+    ] as Array<Express.MulterS3.File>;
+
+    const house = {
+      id,
+      userId: user.id,
+      name: updateHouseDto.name,
+      description: updateHouseDto.description,
+      address: updateHouseDto.address,
+      houseType: updateHouseDto.houseType,
+      pricePerDay: updateHouseDto.pricePerDay,
+      images: [
+        { key: 1, url: 'image/url/location1' },
+        { key: 2, url: 'image/url/location2' },
+      ],
+    } as House;
+
+    const spyFindHouse = jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue(house);
+
+    const spyUpdate = jest.spyOn(mockHouseRepository, 'update');
+    jest.spyOn(multerFn, 'deleteImageInS3');
+
+    await houseService.updateHouse(id, user, updateHouseDto, files);
+
+    expect(spyFindHouse).toBeCalledTimes(1);
+    expect(spyUpdate).toBeCalledTimes(1);
+  });
+
+  it('숙소 수정하기 권한 없음 예외 케이스', async () => {
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = 1;
+
+    const updateHouseDto: UpdateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const files = [
+      { location: 'image/url/location3' },
+      { location: 'image/url/location4' },
+    ] as Array<Express.MulterS3.File>;
+
+    const house = {
+      id,
+      userId: 2,
+      name: updateHouseDto.name,
+      description: updateHouseDto.description,
+      address: updateHouseDto.address,
+      houseType: updateHouseDto.houseType,
+      pricePerDay: updateHouseDto.pricePerDay,
+      images: [
+        { key: 1, url: 'image/url/location1' },
+        { key: 2, url: 'image/url/location2' },
+      ],
+    } as House;
+
+    jest.spyOn(houseService, 'findHouse').mockResolvedValue(house);
+
+    jest.spyOn(multerFn, 'deleteImageInS3');
+
+    try {
+      await houseService.updateHouse(id, user, updateHouseDto, files);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ForbiddenException);
+      expect(e.message).toEqual('매물 수정 권한이 없음');
+      expect(multerFn.deleteImageInS3).toBeCalledTimes(2);
+    }
+  });
+
+  it('숙소 수정 이미지 5개 초과 예외 케이스', async () => {
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = expect.any(Number);
+
+    const updateHouseDto: UpdateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const files = [
+      { location: 'image/url/location3' },
+      { location: 'image/url/location4' },
+      { location: 'image/url/location5' },
+      { location: 'image/url/location6' },
+    ] as Array<Express.MulterS3.File>;
+
+    const house = {
+      id,
+      userId: user.id,
+      name: updateHouseDto.name,
+      description: updateHouseDto.description,
+      address: updateHouseDto.address,
+      houseType: updateHouseDto.houseType,
+      pricePerDay: updateHouseDto.pricePerDay,
+      images: [
+        { key: 1, url: 'image/url/location1' },
+        { key: 2, url: 'image/url/location2' },
+      ],
+    } as House;
+
+    jest.spyOn(houseService, 'findHouse').mockResolvedValue(house);
+
+    jest.spyOn(multerFn, 'deleteImageInS3');
+
+    try {
+      await houseService.updateHouse(id, user, updateHouseDto, files);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toEqual('이미지 5개 초과');
+      expect(multerFn.deleteImageInS3).toBeCalledTimes(4);
     }
   });
 });
