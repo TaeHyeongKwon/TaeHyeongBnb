@@ -14,7 +14,7 @@ export class UpdateHouseDto {
   address: string;
 
   @IsString()
-  university: string;
+  university?: string;
 
   @IsNotEmpty()
   @IsString()
