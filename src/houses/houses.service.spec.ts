@@ -440,4 +440,64 @@ describe('HousesService', () => {
       expect(multerFn.deleteImageInS3).toBeCalledTimes(4);
     }
   });
+
+  it('이미지 삭제하기 성공 케이스', async () => {
+    const id = expect.any(Number);
+    const key = 1;
+    const userId = expect.any(Number);
+    const images = [
+      { key: 1, url: 'image/url/location1' },
+      { key: 2, url: 'image/url/location2' },
+    ];
+
+    const spyFindHouse = jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue({ userId, images } as House);
+    const spyDeleteImageInS3 = jest.spyOn(multerFn, 'deleteImageInS3');
+
+    await houseService.deleteImage(id, key, userId);
+
+    expect(spyFindHouse).toBeCalledTimes(1);
+    expect(spyDeleteImageInS3).toBeCalledTimes(1);
+    expect(mockHouseRepository.update).toBeCalledTimes(1);
+  });
+
+  it('이미지 삭제 권한 없음 예외 케이스', async () => {
+    const id = expect.any(Number);
+    const key = 1;
+    const userId = 1;
+    const images = [
+      { key: 1, url: 'image/url/location1' },
+      { key: 2, url: 'image/url/location2' },
+    ];
+
+    jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue({ userId: 2, images } as House);
+
+    try {
+      await houseService.deleteImage(id, key, userId);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ForbiddenException);
+      expect(e.message).toEqual('삭제 권한 없음');
+    }
+  });
+
+  it('이미지 최소 1개 예외 케이스', async () => {
+    const id = expect.any(Number);
+    const key = 1;
+    const userId = expect.any(Number);
+    const images = [{ key: 1, url: 'image/url/location1' }];
+
+    jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue({ userId, images } as House);
+
+    try {
+      await houseService.deleteImage(id, key, userId);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+      expect(e.message).toEqual('최소 1개 이미지는 필수');
+    }
+  });
 });
