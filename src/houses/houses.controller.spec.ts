@@ -31,7 +31,7 @@ describe('HousesController', () => {
     expect(housesController).toBeDefined();
   });
 
-  it('숙소 리스트 조회 성공 case', async () => {
+  it('findHouseList success case', async () => {
     const findAllHouseDto: FindAllHouseDto = { page: '1', sort: ListSort.ASC };
 
     mockHouseService.findHouseList = jest.fn(() => {
@@ -47,7 +47,7 @@ describe('HousesController', () => {
     });
   });
 
-  it('숙소 등록 성공 케이스', async () => {
+  it('createHouse success case', async () => {
     const createHouseDto: CreateHouseDto = {
       name: expect.any(String),
       description: expect.any(String),
@@ -78,7 +78,7 @@ describe('HousesController', () => {
     expect(mockHouseService.createHouse).toBeCalledTimes(1);
   });
 
-  it('숙소 상세 조회 성공 case', async () => {
+  it('findHouse success case', async () => {
     const id = expect.any(Number);
 
     const houseDetail = {
@@ -113,7 +113,7 @@ describe('HousesController', () => {
     expect(mockHouseService.findHouse).toHaveBeenCalledTimes(1);
   });
 
-  it('숙소 수정 전 내용조회 성공 케이스', async () => {
+  it('getWrittenHouseDetail success case', async () => {
     const user = new User();
     user.id = expect.any(Number);
 
