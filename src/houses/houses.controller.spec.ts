@@ -5,6 +5,7 @@ import { FindAllHouseDto, ListSort } from './dto/findall.house.dto';
 import { User } from '../entities/user.entity';
 import { CreateHouseDto } from './dto/create.house.dto';
 import { UpdateHouseDto } from './dto/update.house.dto';
+import { ImageQueryKeyDto } from './dto/findparams.house.dto';
 
 describe('HousesController', () => {
   let housesController: HousesController;
@@ -166,5 +167,17 @@ describe('HousesController', () => {
       files,
     );
     expect(mockHouseService.updateHouse).toBeCalledTimes(1);
+  });
+
+  it('deleteImage success case', async () => {
+    const query: ImageQueryKeyDto = { key: 1 };
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = expect.any(Number);
+
+    await housesController.deleteImage(query, id, user);
+
+    expect(mockHouseService.deleteImage).toBeCalledTimes(1);
+    expect(mockHouseService.deleteImage).toBeCalledWith(id, query.key, user.id);
   });
 });
