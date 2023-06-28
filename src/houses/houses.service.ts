@@ -132,7 +132,7 @@ export class HousesService {
 
       const updatedHouse = { userId: user.id, ...updateHouseDto, images };
 
-      await this.houseRepository.update(id, updatedHouse);
+      return await this.houseRepository.update(id, updatedHouse);
     } catch (e) {
       for (const toBeDeletedImage of addedImages) {
         await deleteImageInS3(toBeDeletedImage);
