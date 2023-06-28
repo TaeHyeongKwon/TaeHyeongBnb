@@ -342,13 +342,21 @@ describe('HousesService', () => {
       .spyOn(houseService, 'findHouse')
       .mockResolvedValue(house);
 
-    const spyUpdate = jest.spyOn(mockHouseRepository, 'update');
     jest.spyOn(multerFn, 'deleteImageInS3');
 
-    await houseService.updateHouse(id, user, updateHouseDto, files);
+    mockHouseRepository.update = jest.fn(() => {
+      return 'update result';
+    });
 
+    const result = await houseService.updateHouse(
+      id,
+      user,
+      updateHouseDto,
+      files,
+    );
+
+    expect(result).toEqual('update result');
     expect(spyFindHouse).toBeCalledTimes(1);
-    expect(spyUpdate).toBeCalledTimes(1);
   });
 
   it('숙소 수정하기 권한 없음 예외 케이스', async () => {
