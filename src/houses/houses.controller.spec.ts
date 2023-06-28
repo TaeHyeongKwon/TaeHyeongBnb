@@ -180,4 +180,18 @@ describe('HousesController', () => {
     expect(mockHouseService.deleteImage).toBeCalledTimes(1);
     expect(mockHouseService.deleteImage).toBeCalledWith(id, query.key, user.id);
   });
+
+  it('deleteHouse success case', async () => {
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = 1;
+
+    mockHouseService.deleteHouse.mockResolvedValue('deleteHouse result');
+
+    const result = await housesController.deleteHouse(id, user);
+
+    expect(result).toEqual('deleteHouse result');
+    expect(mockHouseService.deleteHouse).toBeCalledTimes(1);
+    expect(mockHouseService.deleteHouse).toBeCalledWith(id, user.id);
+  });
 });
