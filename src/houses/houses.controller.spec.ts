@@ -4,6 +4,7 @@ import { HousesService } from './houses.service';
 import { FindAllHouseDto, ListSort } from './dto/findall.house.dto';
 import { User } from '../entities/user.entity';
 import { CreateHouseDto } from './dto/create.house.dto';
+import { UpdateHouseDto } from './dto/update.house.dto';
 
 describe('HousesController', () => {
   let housesController: HousesController;
@@ -128,5 +129,42 @@ describe('HousesController', () => {
     expect(result).toEqual('getWrittenHouseDetail result');
     expect(mockHouseService.getWrittenHouseDetail).toBeCalledTimes(1);
     expect(mockHouseService.getWrittenHouseDetail).toBeCalledWith(user.id, id);
+  });
+
+  it('updateHouse success case', async () => {
+    const id = 1;
+    const updateHouseDto: UpdateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const user = new User();
+    user.id = 1;
+
+    const files = [
+      { location: 'image/url/location3' },
+      { location: 'image/url/location4' },
+    ] as Array<Express.MulterS3.File>;
+
+    mockHouseService.updateHouse.mockResolvedValue('update result');
+
+    const result = await housesController.updateHouse(
+      id,
+      updateHouseDto,
+      user,
+      files,
+    );
+
+    expect(result).toEqual('update result');
+    expect(mockHouseService.updateHouse).toBeCalledWith(
+      id,
+      user,
+      updateHouseDto,
+      files,
+    );
+    expect(mockHouseService.updateHouse).toBeCalledTimes(1);
   });
 });
