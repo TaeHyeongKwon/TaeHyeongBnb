@@ -5,6 +5,7 @@ import { House } from '../entities/house.entity';
 import { FindAllHouseDto, ListSort } from './dto/findall.house.dto';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   HttpException,
   NotFoundException,
@@ -498,6 +499,69 @@ describe('HousesService', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(BadRequestException);
       expect(e.message).toEqual('최소 1개 이미지는 필수');
+    }
+  });
+
+  it('숙소 삭제하기 성공 케이스', async () => {
+    const id = expect.any(Number);
+    const userId = 1;
+    const images = [{ key: 1, url: 'image/url/location1' }];
+
+    jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue({ userId: 1, images } as House);
+
+    mockReservationService.getReservationByHouseId = jest
+      .fn()
+      .mockResolvedValue([]);
+
+    await houseService.deleteHouse(id, userId);
+
+    expect(houseService.findHouse).toBeCalledTimes(1);
+    expect(mockHouseRepository.delete).toBeCalledTimes(1);
+    expect(mockReservationService.getReservationByHouseId).toBeCalledTimes(1);
+    expect(multerFn.deleteImageInS3).toBeCalledTimes(images.length);
+  });
+
+  it('숙소 삭제 권한 예외 케이스', async () => {
+    const id = expect.any(Number);
+    const userId = 1;
+    const images = [{ key: 1, url: 'image/url/location1' }];
+
+    jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue({ userId: 2, images } as House);
+
+    try {
+      await houseService.deleteHouse(id, userId);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ForbiddenException);
+      expect(e.message).toEqual('삭제 권한 없음');
+    }
+  });
+
+  it('예약 숙소 삭제 불가 예외 케이스', async () => {
+    const id = 1;
+    const userId = 1;
+    const images = [{ key: 1, url: 'image/url/location1' }];
+
+    jest
+      .spyOn(houseService, 'findHouse')
+      .mockResolvedValue({ userId: 1, images } as House);
+
+    const reservation = [
+      { id: expect.any(Number), HouseId: id, userId: expect.any(Number) },
+    ];
+
+    mockReservationService.getReservationByHouseId = jest
+      .fn()
+      .mockResolvedValue(reservation);
+
+    try {
+      await houseService.deleteHouse(id, userId);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ConflictException);
+      expect(e.message).toEqual('예약이 존재하는 숙소는 삭제 불가');
     }
   });
 });
