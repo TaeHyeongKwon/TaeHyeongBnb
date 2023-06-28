@@ -243,9 +243,10 @@ describe('HousesService', () => {
   });
 
   it('숙소 상세 조회 예외 케이스', async () => {
-    jest.spyOn(houseService, 'findHouse').mockReturnValue(undefined);
+    const id = expect.any(Number);
+    mockHouseRepository.findOne = jest.fn().mockResolvedValue(undefined);
     try {
-      await houseService.findHouse(1);
+      await houseService.findHouse(id);
     } catch (e) {
       expect(e).toBeInstanceOf(NotFoundException);
       expect(e.message).toEqual('없는 숙소 입니다.');
