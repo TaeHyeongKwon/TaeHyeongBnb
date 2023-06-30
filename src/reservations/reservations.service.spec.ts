@@ -12,6 +12,12 @@ describe('ReservationsService', () => {
   const mockReservationRepository = {
     save: jest.fn(),
     findOne: jest.fn(),
+    createQueryBuilder: jest.fn().mockReturnValue({
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getRawMany: jest.fn().mockReturnThis(),
+    }),
   };
 
   const mockHouseService = {
@@ -145,6 +151,31 @@ describe('ReservationsService', () => {
         expect(e).toBeInstanceOf(BadRequestException);
         expect(e.message).toEqual('예약의 최소 기준은 1박 입니다.');
       }
+    });
+  });
+
+  describe('getMyReservation', () => {
+    it('getMyReservation success case', async () => {
+      const userId = expect.any(Number);
+
+      jest
+        .spyOn(mockReservationRepository.createQueryBuilder(), 'getRawMany')
+        .mockResolvedValue([]);
+      const result = await reservationService.getMyReservation(userId);
+
+      expect(result).toEqual([]);
+      expect(
+        mockReservationRepository.createQueryBuilder().leftJoinAndSelect,
+      ).toBeCalledTimes(1);
+      expect(
+        mockReservationRepository.createQueryBuilder().select,
+      ).toBeCalledTimes(1);
+      expect(
+        mockReservationRepository.createQueryBuilder().where,
+      ).toBeCalledTimes(1);
+      expect(
+        mockReservationRepository.createQueryBuilder().getRawMany,
+      ).toBeCalledTimes(1);
     });
   });
 });
