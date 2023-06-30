@@ -18,6 +18,7 @@ describe('ReservationsService', () => {
       where: jest.fn().mockReturnThis(),
       getRawMany: jest.fn().mockReturnThis(),
     }),
+    find: jest.fn(),
   };
 
   const mockHouseService = {
@@ -176,6 +177,18 @@ describe('ReservationsService', () => {
       expect(
         mockReservationRepository.createQueryBuilder().getRawMany,
       ).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getReservationByHouseId', () => {
+    it('getReservationByHouseId success case', async () => {
+      const houseId = expect.any(Number);
+
+      mockReservationRepository.find.mockResolvedValue('find result');
+      const result = await reservationService.getReservationByHouseId(houseId);
+
+      expect(result).toEqual('find result');
+      expect(mockReservationRepository.find).toBeCalledTimes(1);
     });
   });
 });
