@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { HousesService } from '../houses/houses.service';
 import { ReservationInfo } from './interface/reservation.interface';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('ReservationsService', () => {
   let reservationService: ReservationsService;
@@ -189,6 +189,32 @@ describe('ReservationsService', () => {
 
       expect(result).toEqual('find result');
       expect(mockReservationRepository.find).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getReservation', () => {
+    it('getReservation success case', async () => {
+      const id = expect.any(Number);
+
+      mockReservationRepository.findOne.mockResolvedValue('findOne result');
+
+      const result = await reservationService.getReservation(id);
+
+      expect(result).toEqual('findOne result');
+      expect(mockReservationRepository.findOne).toBeCalledTimes(1);
+    });
+
+    it('When reservation does not exist', async () => {
+      const id = expect.any(Number);
+
+      mockReservationRepository.findOne.mockResolvedValue(undefined);
+
+      try {
+        await reservationService.getReservation(id);
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e.message).toEqual('예약 정보 없음');
+      }
     });
   });
 });
