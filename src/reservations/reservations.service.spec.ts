@@ -4,7 +4,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { HousesService } from '../houses/houses.service';
 import { ReservationInfo } from './interface/reservation.interface';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 describe('ReservationsService', () => {
   let reservationService: ReservationsService;
@@ -19,6 +23,7 @@ describe('ReservationsService', () => {
       getRawMany: jest.fn().mockReturnThis(),
     }),
     find: jest.fn(),
+    delete: jest.fn(),
   };
 
   const mockHouseService = {
@@ -215,6 +220,88 @@ describe('ReservationsService', () => {
         expect(e).toBeInstanceOf(NotFoundException);
         expect(e.message).toEqual('예약 정보 없음');
       }
+    });
+  });
+
+  describe('deleteReservation', () => {
+    it('deleteReservation success case', async () => {
+      const id = 1;
+      const userId = 1;
+
+      const today = new Date();
+      const possibleDate = new Date(today);
+      possibleDate.setDate(possibleDate.getDate() + 5);
+
+      const check_in = possibleDate.toISOString().split('T')[0];
+
+      jest
+        .spyOn(reservationService, 'getReservation')
+        .mockResolvedValue({ id, userId, check_in } as Reservation);
+
+      const result = await reservationService.deleteReservation(id, userId);
+
+      expect(reservationService.getReservation).toBeCalledTimes(1);
+      expect(mockReservationRepository.delete).toBeCalledTimes(1);
+      expect(mockReservationRepository.delete).toBeCalledWith(id);
+      expect(result).toEqual({ msg: '취소완료' });
+    });
+
+    it('When userId is different', async () => {
+      const id = 1;
+      const userId = 1;
+
+      const today = new Date();
+      const possibleDate = new Date(today);
+      possibleDate.setDate(possibleDate.getDate() + 5);
+
+      const check_in = possibleDate.toISOString().split('T')[0];
+
+      jest
+        .spyOn(reservationService, 'getReservation')
+        .mockResolvedValue({ id, userId: 2, check_in } as Reservation);
+
+      try {
+        await reservationService.deleteReservation(id, userId);
+      } catch (e) {
+        expect(e).toBeInstanceOf(ForbiddenException);
+        expect(e.message).toEqual('취소 권한 없음');
+      }
+    });
+
+    it('When the check-in date has already passed', async () => {
+      const id = 1;
+      const userId = 1;
+
+      const today = new Date();
+      const impossibleDate = new Date(today);
+      impossibleDate.setDate(impossibleDate.getDate() - 2);
+
+      const check_in = impossibleDate.toISOString().split('T')[0];
+
+      jest
+        .spyOn(reservationService, 'getReservation')
+        .mockResolvedValue({ id: 1, userId, check_in } as Reservation);
+
+      try {
+        await reservationService.deleteReservation(id, userId);
+      } catch (e) {
+        expect(reservationService.getReservation).toBeCalledTimes(1);
+        expect(e).toBeInstanceOf(BadRequestException);
+        expect(e.message).toEqual('취소 가능 날짜 아님');
+      }
+    });
+  });
+
+  describe('findByFields', () => {
+    it('findByFields success case', async () => {
+      const options = expect.any(Object);
+
+      mockReservationRepository.findOne.mockResolvedValue('findOne result');
+
+      const result = await reservationService.findByFields(options);
+
+      expect(result).toEqual('findOne result');
+      expect(mockReservationRepository.findOne).toBeCalledTimes(1);
     });
   });
 });
