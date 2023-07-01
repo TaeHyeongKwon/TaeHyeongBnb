@@ -1,20 +1,62 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReservationsController } from './reservations.controller';
 import { ReservationsService } from './reservations.service';
+import { User } from '../entities/user.entity';
+import { CreateReservationDto } from './dto/create.reservation.dto';
 
 describe('ReservationsController', () => {
-  let controller: ReservationsController;
+  let reservationsController: ReservationsController;
+
+  const mockReservationsService = {
+    createReservation: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ReservationsController],
-      providers: [ReservationsService],
+      providers: [
+        { provide: ReservationsService, useValue: mockReservationsService },
+      ],
     }).compile();
 
-    controller = module.get<ReservationsController>(ReservationsController);
+    reservationsController = module.get<ReservationsController>(
+      ReservationsController,
+    );
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(reservationsController).toBeDefined();
+  });
+
+  describe('createReservation', () => {
+    it('createReservation success case', async () => {
+      const user = new User();
+      user.id = expect.any(Number);
+
+      const id = expect.any(Number);
+
+      const createReservationDto: CreateReservationDto = {
+        check_in: expect.any(String),
+        check_out: expect.any(String),
+      };
+
+      mockReservationsService.createReservation.mockResolvedValue(
+        'create result',
+      );
+
+      const result = await reservationsController.createReservation(
+        user,
+        id,
+        createReservationDto,
+      );
+
+      expect(result).toEqual('create result');
+      expect(mockReservationsService.createReservation).toBeCalledWith({
+        userId: user.id,
+        houseId: id,
+        ...createReservationDto,
+      });
+      expect(mockReservationsService.createReservation).toBeCalledTimes(1);
+    });
   });
 });
