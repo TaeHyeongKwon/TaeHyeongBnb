@@ -10,6 +10,7 @@ describe('ReservationsController', () => {
   const mockReservationsService = {
     createReservation: jest.fn(),
     getMyReservation: jest.fn(),
+    deleteReservation: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -75,6 +76,28 @@ describe('ReservationsController', () => {
       expect(result).toEqual('getMyReservation result');
       expect(mockReservationsService.getMyReservation).toBeCalledTimes(1);
       expect(mockReservationsService.getMyReservation).toBeCalledWith(user.id);
+    });
+  });
+
+  describe('deleteReservation', () => {
+    it('deleteReservation success case', async () => {
+      const user = new User();
+      user.id = expect.any(Number);
+
+      const id = expect.any(Number);
+
+      mockReservationsService.deleteReservation.mockResolvedValue(
+        'delete result',
+      );
+
+      const result = await reservationsController.deleteReservation(user, id);
+
+      expect(result).toEqual('delete result');
+      expect(mockReservationsService.deleteReservation).toBeCalledTimes(1);
+      expect(mockReservationsService.deleteReservation).toBeCalledWith(
+        id,
+        user.id,
+      );
     });
   });
 });
