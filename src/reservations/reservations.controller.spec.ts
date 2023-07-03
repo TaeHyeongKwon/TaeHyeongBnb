@@ -9,6 +9,7 @@ describe('ReservationsController', () => {
 
   const mockReservationsService = {
     createReservation: jest.fn(),
+    getMyReservation: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -57,6 +58,23 @@ describe('ReservationsController', () => {
         ...createReservationDto,
       });
       expect(mockReservationsService.createReservation).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getMyReservation', () => {
+    it('getMyReservation success case', async () => {
+      const user = new User();
+      user.id = expect.any(Number);
+
+      mockReservationsService.getMyReservation.mockResolvedValue(
+        'getMyReservation result',
+      );
+
+      const result = await reservationsController.getMyReservation(user);
+
+      expect(result).toEqual('getMyReservation result');
+      expect(mockReservationsService.getMyReservation).toBeCalledTimes(1);
+      expect(mockReservationsService.getMyReservation).toBeCalledWith(user.id);
     });
   });
 });
