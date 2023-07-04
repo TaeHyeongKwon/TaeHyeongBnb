@@ -4,6 +4,8 @@ import { ManagerService } from './manager.service';
 import { ManagerSignUpDto } from './dto/manager.signup.dto';
 import { Response } from 'express';
 import { ManagerLoginDto } from './dto/manager.login.dto';
+import { Manager } from '../entities/manager.entity';
+import { ManagerTokenPayload } from './jwtmanager/m.jwt.payload.interface';
 
 describe('ManagerController', () => {
   let managerController: ManagerController;
@@ -11,6 +13,7 @@ describe('ManagerController', () => {
   const mockManagerService = {
     managerSignUp: jest.fn(),
     managerLogin: jest.fn(),
+    createManagerAccess: jest.fn(),
   };
 
   const mockResponse = {
@@ -81,6 +84,31 @@ describe('ManagerController', () => {
         cookieOption,
       );
       expect(mockResponse.json).toBeCalledWith({ msg: '관리자 로그인' });
+    });
+  });
+
+  describe('checkManagerRefresh', () => {
+    it('checkManagerRefresh success case', async () => {
+      const user = new Manager();
+      user.id = expect.any(Number);
+      user.name = expect.any(String);
+
+      const payload: ManagerTokenPayload = {
+        id: user.id,
+        name: user.name,
+      };
+
+      mockManagerService.createManagerAccess.mockResolvedValue('managerAccess');
+
+      await managerController.checkManagerRefresh(user, mockResponse);
+
+      expect(mockManagerService.createManagerAccess).toBeCalledTimes(1);
+      expect(mockManagerService.createManagerAccess).toBeCalledWith(payload);
+      expect(mockResponse.setHeader).toBeCalledWith(
+        'Authorizetion',
+        'Bearer managerAccess',
+      );
+      expect(mockResponse.json).toBeCalledWith({ msg: '관리자 토큰 재발급' });
     });
   });
 });
