@@ -191,4 +191,19 @@ describe('ManagerService', () => {
       }
     });
   });
+
+  describe('tokenValidateManager', () => {
+    it('tokenValidateManager success case', async () => {
+      const payload: ManagerTokenPayload = {
+        id: expect.any(Number),
+        name: expect.any(String),
+      };
+
+      mockManagerRepository.findOne.mockResolvedValue('findOne result');
+
+      const result = await managerService.tokenValidateManager(payload);
+
+      expect(result).toEqual('findOne result');
+    });
+  });
 });
