@@ -3,18 +3,20 @@ import { ManagerController } from './manager.controller';
 import { ManagerService } from './manager.service';
 
 describe('ManagerController', () => {
-  let controller: ManagerController;
+  let managerController: ManagerController;
+
+  const mockManagerService = {};
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ManagerController],
-      providers: [ManagerService],
+      providers: [{ provide: ManagerService, useValue: mockManagerService }],
     }).compile();
 
-    controller = module.get<ManagerController>(ManagerController);
+    managerController = module.get<ManagerController>(ManagerController);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(managerController).toBeDefined();
   });
 });
