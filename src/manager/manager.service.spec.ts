@@ -134,19 +134,21 @@ describe('ManagerService', () => {
   });
 
   describe('managerLogin', () => {
+    const managerLoginDto: ManagerLoginDto = {
+      email: expect.any(String),
+      password: 'testpass',
+    };
+
+    const solt = Number(process.env.M_HASHING_SOLT);
+
+    const managerInfo = {
+      id: expect.any(Number),
+      email: expect.any(String),
+      password: expect.any(String),
+    };
+
     it('managerLogin success case', async () => {
-      const managerLoginDto: ManagerLoginDto = {
-        email: expect.any(String),
-        password: 'testpass',
-      };
-
-      const solt = Number(process.env.M_HASHING_SOLT);
-
-      const managerInfo = {
-        id: expect.any(Number),
-        email: expect.any(String),
-        password: await bcrypt.hash('testpass', solt),
-      };
+      managerInfo.password = await bcrypt.hash('testpass', solt);
 
       mockManagerRepository.findOne.mockResolvedValue(managerInfo);
 
@@ -167,11 +169,6 @@ describe('ManagerService', () => {
     });
 
     it('When there is no matching email', async () => {
-      const managerLoginDto: ManagerLoginDto = {
-        email: 'testemail@test.com',
-        password: 'testpass',
-      };
-
       mockManagerRepository.findOne.mockResolvedValue(undefined);
 
       try {
@@ -183,19 +180,7 @@ describe('ManagerService', () => {
     });
 
     it('When passwords do not match', async () => {
-      const managerLoginDto: ManagerLoginDto = {
-        email: expect.any(String),
-        password: 'testpass',
-      };
-
-      const solt = Number(process.env.M_HASHING_SOLT);
-
-      const managerInfo = {
-        id: expect.any(Number),
-        email: expect.any(String),
-        password: await bcrypt.hash('passtest', solt),
-      };
-
+      managerInfo.password = await bcrypt.hash('passtest', solt);
       mockManagerRepository.findOne.mockResolvedValue(managerInfo);
 
       try {
