@@ -5,6 +5,7 @@ import { Manager } from '../entities/manager.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ManagerSignUpDto } from './dto/manager.signup.dto';
 import { ConflictException } from '@nestjs/common';
+import { ManagerTokenPayload } from './jwtmanager/m.jwt.payload.interface';
 
 describe('ManagerService', () => {
   let managerService: ManagerService;
@@ -15,7 +16,9 @@ describe('ManagerService', () => {
     save: jest.fn(),
   };
 
-  const mockJwtService = {};
+  const mockJwtService = {
+    sign: jest.fn(),
+  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -89,6 +92,38 @@ describe('ManagerService', () => {
         expect(e).toBeInstanceOf(ConflictException);
         expect(e.message).toEqual('중복 이메일');
       }
+    });
+  });
+
+  describe('createManagerAccess', () => {
+    it('createManagerAccess success case', async () => {
+      const payload: ManagerTokenPayload = {
+        id: expect.any(Number),
+        name: expect.any(String),
+      };
+
+      mockJwtService.sign.mockResolvedValue('managerAccess');
+
+      const result = await managerService.createManagerAccess(payload);
+
+      expect(result).toEqual('managerAccess');
+      expect(mockJwtService.sign).toBeCalledTimes(1);
+    });
+  });
+
+  describe('createManagerRefresh', () => {
+    it('createManagerRefresh success case', async () => {
+      const payload: ManagerTokenPayload = {
+        id: expect.any(Number),
+        name: expect.any(String),
+      };
+
+      mockJwtService.sign.mockResolvedValue('managerRefresh');
+
+      const result = await managerService.createManagerRefresh(payload);
+
+      expect(result).toEqual('managerRefresh');
+      expect(mockJwtService.sign).toBeCalledTimes(1);
     });
   });
 });
