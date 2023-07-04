@@ -4,8 +4,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Manager } from '../entities/manager.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ManagerSignUpDto } from './dto/manager.signup.dto';
-import { ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ManagerTokenPayload } from './jwtmanager/m.jwt.payload.interface';
+import { ManagerLoginDto } from './dto/manager.login.dto';
+import * as bcrypt from 'bcrypt';
 
 describe('ManagerService', () => {
   let managerService: ManagerService;
@@ -124,6 +130,80 @@ describe('ManagerService', () => {
 
       expect(result).toEqual('managerRefresh');
       expect(mockJwtService.sign).toBeCalledTimes(1);
+    });
+  });
+
+  describe('managerLogin', () => {
+    it('managerLogin success case', async () => {
+      const managerLoginDto: ManagerLoginDto = {
+        email: expect.any(String),
+        password: 'testpass',
+      };
+
+      const solt = Number(process.env.M_HASHING_SOLT);
+
+      const managerInfo = {
+        id: expect.any(Number),
+        email: expect.any(String),
+        password: await bcrypt.hash('testpass', solt),
+      };
+
+      mockManagerRepository.findOne.mockResolvedValue(managerInfo);
+
+      jest
+        .spyOn(managerService, 'createManagerAccess')
+        .mockResolvedValue('managerAccess');
+
+      jest
+        .spyOn(managerService, 'createManagerRefresh')
+        .mockResolvedValue('managerRefresh');
+
+      const result = await managerService.managerLogin(managerLoginDto);
+
+      expect(result).toEqual({
+        managerAccessToken: 'managerAccess',
+        managerRefreshToken: 'managerRefresh',
+      });
+    });
+
+    it('When there is no matching email', async () => {
+      const managerLoginDto: ManagerLoginDto = {
+        email: 'testemail@test.com',
+        password: 'testpass',
+      };
+
+      mockManagerRepository.findOne.mockResolvedValue(undefined);
+
+      try {
+        await managerService.managerLogin(managerLoginDto);
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e.message).toEqual('email을 확인해 주세요.');
+      }
+    });
+
+    it('When passwords do not match', async () => {
+      const managerLoginDto: ManagerLoginDto = {
+        email: expect.any(String),
+        password: 'testpass',
+      };
+
+      const solt = Number(process.env.M_HASHING_SOLT);
+
+      const managerInfo = {
+        id: expect.any(Number),
+        email: expect.any(String),
+        password: await bcrypt.hash('passtest', solt),
+      };
+
+      mockManagerRepository.findOne.mockResolvedValue(managerInfo);
+
+      try {
+        await managerService.managerLogin(managerLoginDto);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
+        expect(e.message).toEqual('password를 확인해 주세요');
+      }
     });
   });
 });
