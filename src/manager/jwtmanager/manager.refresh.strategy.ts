@@ -18,7 +18,7 @@ export class ManagerRefreshStrategy extends PassportStrategy(
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.M_REFRESH_SECRET,
+      secretOrKey: process.env.M_REFRESH_SECRET || 'testManagerRefresh',
     });
   }
 
