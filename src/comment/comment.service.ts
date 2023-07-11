@@ -21,7 +21,6 @@ export class CommentService {
 
   async findByFields(options: FindOneOptions<Comment>): Promise<Comment> {
     const existComment = await this.commentRepository.findOne(options);
-    if (!existComment) throw new NotFoundException('없는 댓글');
     return existComment;
   }
 
