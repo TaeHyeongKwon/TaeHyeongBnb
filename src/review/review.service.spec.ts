@@ -16,6 +16,7 @@ describe('ReviewService', () => {
       return { id: expect.any(Number), ...x };
     }),
     save: jest.fn(),
+    find: jest.fn(),
   };
 
   const mockHousesService = {
@@ -137,6 +138,33 @@ describe('ReviewService', () => {
         expect(e).toBeInstanceOf(ConflictException);
         expect(e.message).toEqual('해당 예약의 리뷰가 존재');
       }
+    });
+  });
+
+  describe('findAll', () => {
+    const houseId = expect.any(Number);
+    it('findAll success case', async () => {
+      mockHousesService.findHouse.mockResolvedValue('findHouse result');
+
+      mockReviewRepository.find.mockResolvedValue('find result');
+
+      const result = await reviewService.findAll(houseId);
+
+      expect(result).toEqual('find result');
+      expect(mockHousesService.findHouse).toBeCalledTimes(1);
+      expect(mockReviewRepository.find).toBeCalledTimes(1);
+    });
+  });
+
+  describe('findByFields', () => {
+    const option = expect.any(Object);
+    it('findByFields success case', async () => {
+      mockReviewRepository.findOne.mockResolvedValue('findOne result');
+
+      const result = await reviewService.findByFields(option);
+
+      expect(result).toEqual('findOne result');
+      expect(mockReviewRepository.findOne).toBeCalledTimes(1);
     });
   });
 });
