@@ -55,11 +55,13 @@ describe('ReviewService', () => {
     const today = new Date();
     const possibleDate = new Date(today);
     possibleDate.setDate(possibleDate.getDate() - 3);
-    let check_out = possibleDate.toISOString().split('T')[0];
+    const impossibleDate = new Date(today);
+    impossibleDate.setDate(impossibleDate.getDate() + 1);
 
     it('createReview success case', async () => {
+      const check_out = possibleDate.toISOString().split('T')[0];
       mockReservationsService.findByFields.mockResolvedValue({ check_out });
-      mockHousesService.findHouse.mockReturnValue({
+      mockHousesService.findHouse.mockResolvedValue({
         id: expect.any(Number),
       });
       mockReviewRepository.findOne.mockResolvedValue(undefined);
@@ -101,12 +103,10 @@ describe('ReviewService', () => {
     });
 
     it('Can not write a review before check out', async () => {
-      const impossibleDate = new Date(today);
-      impossibleDate.setDate(possibleDate.getDate() + 1);
-      check_out = impossibleDate.toISOString().split('T')[0];
+      const check_out = impossibleDate.toISOString().split('T')[0];
 
       mockReservationsService.findByFields.mockResolvedValue({ check_out });
-      mockHousesService.findHouse.mockReturnValue({
+      mockHousesService.findHouse.mockResolvedValue({
         id: expect.any(Number),
       });
 
@@ -123,8 +123,9 @@ describe('ReviewService', () => {
     });
 
     it('already exist review for the reservation', async () => {
+      const check_out = possibleDate.toISOString().split('T')[0];
       mockReservationsService.findByFields.mockResolvedValue({ check_out });
-      mockHousesService.findHouse.mockReturnValue({
+      mockHousesService.findHouse.mockResolvedValue({
         id: expect.any(Number),
       });
       mockReviewRepository.findOne.mockResolvedValue('exist review');
