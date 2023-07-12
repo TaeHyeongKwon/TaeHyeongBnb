@@ -58,7 +58,6 @@ export class HostService {
       await queryRunner.commitTransaction();
       return;
     } catch (err) {
-      console.error(err);
       await queryRunner.rollbackTransaction();
       throw new HttpException('호스트 등록 트랜잭션 롤백 에러', 500);
     } finally {
