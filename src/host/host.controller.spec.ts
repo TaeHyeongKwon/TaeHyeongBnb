@@ -3,18 +3,21 @@ import { HostController } from './host.controller';
 import { HostService } from './host.service';
 
 describe('HostController', () => {
-  let controller: HostController;
+  let hostController: HostController;
+
+  const mockHostService = {};
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HostController],
-      providers: [HostService],
+      providers: [{ provide: HostService, useValue: mockHostService }],
     }).compile();
 
-    controller = module.get<HostController>(HostController);
+    hostController = module.get<HostController>(HostController);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(hostController).toBeDefined();
   });
 });
