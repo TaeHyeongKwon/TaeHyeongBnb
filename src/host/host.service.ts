@@ -196,7 +196,6 @@ export class HostService {
       await queryRunner.commitTransaction();
       return { msg: '승인 완료' };
     } catch (err) {
-      console.error(err);
       await queryRunner.rollbackTransaction();
       throw new HttpException('호스트 인증 트랜잭션 롤백 에러', 500);
     } finally {
