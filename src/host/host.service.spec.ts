@@ -6,12 +6,17 @@ import { DataSource } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CreateHostDto } from './dto/create-host.dto';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { SendSmsDto } from './dto/send-sms.dto';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
 import { CheckSmsDto } from './dto/check-sms.dto';
 import { GetHostListDto } from './dto/get-hostlist.dto';
+import { User } from '../entities/user.entity';
 
 jest.mock('crypto-js', () => ({
   HmacSHA256: jest.fn().mockReturnValue(['wordArray In crypto-js']),
@@ -212,6 +217,64 @@ describe('HostService', () => {
         skip: 20 * (Number(getHostListDto.page) - 1),
         take: 20,
       });
+    });
+  });
+
+  describe('updateHostApproval', () => {
+    const id = expect.any(Number);
+    const userId = expect.any(Number);
+    it('updateHostApproval success case', async () => {
+      mockHostRepository.findOne.mockResolvedValue({
+        userId,
+      });
+
+      const result = await hostService.updateHostApproval(id);
+
+      expect(result).toEqual({ msg: '승인 완료' });
+      expect(mockDataSource.createQueryRunner).toBeCalledTimes(1);
+      expect(mockQueryRunner.connect).toBeCalledTimes(1);
+      expect(mockQueryRunner.startTransaction).toBeCalledTimes(1);
+      expect(mockQueryRunner.manager.update).toBeCalledTimes(2);
+      expect(mockQueryRunner.manager.update).toHaveBeenNthCalledWith(
+        1,
+        Host,
+        { id },
+        { approval: true },
+      );
+      expect(mockQueryRunner.manager.update).toHaveBeenNthCalledWith(
+        2,
+        User,
+        { id: userId },
+        { host_certification: true },
+      );
+      expect(mockQueryRunner.commitTransaction).toBeCalledTimes(1);
+      expect(mockQueryRunner.release).toBeCalledTimes(1);
+    });
+
+    it('if host data does not exist', async () => {
+      mockHostRepository.findOne.mockResolvedValue(undefined);
+      try {
+        await hostService.updateHostApproval(id);
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e.message).toEqual('존재하지 않는 호스트 신청');
+      }
+    });
+
+    it('if a transaction error occurs', async () => {
+      mockHostRepository.findOne.mockResolvedValue({
+        userId,
+      });
+      mockQueryRunner.manager.update.mockImplementation(() => {
+        throw new Error();
+      });
+
+      try {
+        await hostService.updateHostApproval(id);
+      } catch (e) {
+        expect(e).toBeInstanceOf(HttpException);
+        expect(e.message).toEqual('호스트 인증 트랜잭션 롤백 에러');
+      }
     });
   });
 });
