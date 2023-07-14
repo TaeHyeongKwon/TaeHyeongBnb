@@ -6,10 +6,11 @@ import { DataSource } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CreateHostDto } from './dto/create-host.dto';
-import { HttpException } from '@nestjs/common';
+import { BadRequestException, HttpException } from '@nestjs/common';
 import { SendSmsDto } from './dto/send-sms.dto';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
+import { CheckSmsDto } from './dto/check-sms.dto';
 
 jest.mock('crypto-js', () => ({
   HmacSHA256: jest.fn().mockReturnValue(['wordArray In crypto-js']),
@@ -48,6 +49,7 @@ describe('HostService', () => {
   const mockCacheManager = {
     del: jest.fn(),
     set: jest.fn(),
+    get: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -165,6 +167,31 @@ describe('HostService', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(HttpException);
         expect(e.message).toEqual('네이버 SENS SMS전송 axios 에러');
+      }
+    });
+  });
+
+  describe('checkSms', () => {
+    const checkSmsDto: CheckSmsDto = {
+      checkCode: '123456',
+    };
+    it('checkSms success case', async () => {
+      mockCacheManager.get.mockResolvedValue('123456');
+
+      const result = await hostService.checkSms(checkSmsDto);
+
+      expect(mockCacheManager.get).toBeCalledTimes(1);
+      expect(mockCacheManager.get).toBeCalledWith('BnbPhoneNumberCheckCode');
+      expect(result).toEqual(true);
+    });
+
+    it('if the codes do not match', async () => {
+      mockCacheManager.get.mockResolvedValue('987654');
+      try {
+        await hostService.checkSms(checkSmsDto);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
+        expect(e.message).toEqual('인증 코드가 일치하지 않습니다.');
       }
     });
   });
