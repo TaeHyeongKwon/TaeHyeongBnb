@@ -11,6 +11,7 @@ import { SendSmsDto } from './dto/send-sms.dto';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
 import { CheckSmsDto } from './dto/check-sms.dto';
+import { GetHostListDto } from './dto/get-hostlist.dto';
 
 jest.mock('crypto-js', () => ({
   HmacSHA256: jest.fn().mockReturnValue(['wordArray In crypto-js']),
@@ -25,6 +26,7 @@ describe('HostService', () => {
   const mockHostRepository = {
     findOne: jest.fn(),
     create: jest.fn(),
+    find: jest.fn(),
   };
 
   const mockQueryRunner = {
@@ -193,6 +195,23 @@ describe('HostService', () => {
         expect(e).toBeInstanceOf(BadRequestException);
         expect(e.message).toEqual('인증 코드가 일치하지 않습니다.');
       }
+    });
+  });
+
+  describe('getHostList', () => {
+    const getHostListDto: GetHostListDto = {
+      page: expect.any(Number),
+    };
+    it('getHostList success case', async () => {
+      mockHostRepository.find.mockResolvedValue('find result');
+      const result = await hostService.getHostList(getHostListDto);
+
+      expect(result).toEqual('find result');
+      expect(mockHostRepository.find).toBeCalledWith({
+        order: { id: 'DESC' },
+        skip: 20 * (Number(getHostListDto.page) - 1),
+        take: 20,
+      });
     });
   });
 });

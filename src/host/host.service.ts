@@ -110,17 +110,10 @@ export class HostService {
   //   return hash.toString(CryptoJS.enc.Base64);
   // }
 
-  //SMS보내기
   async sendSms(sendSmsDto: SendSmsDto) {
     const timestamp = Date.now().toString();
-
-    //헤더의 시그니처 생성
     const signature: string = this.makeSignature(timestamp);
-
-    //인증을 진행할 난수 생성
     const code: string = this.createRandomNum().toString();
-
-    //네이버sens 오픈API의 헤더 요구사항
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'x-ncp-apigw-timestamp': timestamp,
@@ -128,7 +121,6 @@ export class HostService {
       'x-ncp-apigw-signature-v2': signature,
     };
 
-    //네이버sens 오픈API의 데이터 필수 요구사항
     const body = {
       type: 'SMS',
       from: SMS_CALLING_NUMBER,
@@ -136,35 +128,26 @@ export class HostService {
       messages: [{ to: sendSmsDto.phone_number }],
     };
 
-    //네이버sens 오픈API의 요청 URL
     const url = `https://sens.apigw.ntruss.com/sms/v2/services/${NAVER_SMS_SERVICE_ID}/messages`;
 
-    //axios요청으로 네이버sens SMS 보내기
     await firstValueFrom(this.http.post(url, body, { headers })).catch(() => {
       throw new HttpException('네이버 SENS SMS전송 axios 에러', 500);
     });
 
-    //혹시 이미 존재할 동일 key의 캐시데이터 삭제
     await this.cacheManager.del('BnbPhoneNumberCheckCode');
-
-    //캐시에 인증code 저장 3분간
     await this.cacheManager.set('BnbPhoneNumberCheckCode', code, 180000);
   }
 
-  //SMS인증 코드 확인
   async checkSms(checkSmsDto: CheckSmsDto): Promise<boolean> {
-    //캐시에 저장된 인증code를 변수에 담기
     const certificationCode = await this.cacheManager.get(
       'BnbPhoneNumberCheckCode',
     );
 
-    //인증code와 입력된code를 비교해서 처리
     if (certificationCode !== checkSmsDto.checkCode)
       throw new BadRequestException('인증 코드가 일치하지 않습니다.');
     return true;
   }
 
-  //호스트 신청 리스트 최신순으로 뽑아주기,
   async getHostList(getHostListDto: GetHostListDto) {
     if (!getHostListDto.page) getHostListDto.page = '1';
     return await this.hostRepository.find({
@@ -174,7 +157,6 @@ export class HostService {
     });
   }
 
-  //호스트 신청 승인
   async updateHostApproval(id: number) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -185,9 +167,7 @@ export class HostService {
       });
       if (!existApproval)
         throw new NotFoundException('존재하지 않는 호스트 신청');
-      //신청 승인을 false에서 true로 업데이트
       await queryRunner.manager.update(Host, { id }, { approval: true });
-      //User테이블의 인증항목 또한 true로 업데이트
       await queryRunner.manager.update(
         User,
         { id: existApproval.userId },
@@ -196,8 +176,8 @@ export class HostService {
       await queryRunner.commitTransaction();
       return { msg: '승인 완료' };
     } catch (err) {
-      console.error(err);
       await queryRunner.rollbackTransaction();
+      if (err instanceof NotFoundException) throw err;
       throw new HttpException('호스트 인증 트랜잭션 롤백 에러', 500);
     } finally {
       await queryRunner.release();
