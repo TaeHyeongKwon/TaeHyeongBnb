@@ -149,7 +149,6 @@ export class HostService {
   }
 
   async getHostList(getHostListDto: GetHostListDto) {
-    if (!getHostListDto.page) getHostListDto.page = '1';
     return await this.hostRepository.find({
       order: { id: 'DESC' },
       skip: 20 * (Number(getHostListDto.page) - 1),
