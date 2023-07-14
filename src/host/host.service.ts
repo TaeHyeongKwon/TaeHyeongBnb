@@ -140,8 +140,7 @@ export class HostService {
     const url = `https://sens.apigw.ntruss.com/sms/v2/services/${NAVER_SMS_SERVICE_ID}/messages`;
 
     //axios요청으로 네이버sens SMS 보내기
-    await firstValueFrom(this.http.post(url, body, { headers })).catch((e) => {
-      console.error(e);
+    await firstValueFrom(this.http.post(url, body, { headers })).catch(() => {
       throw new HttpException('네이버 SENS SMS전송 axios 에러', 500);
     });
 
