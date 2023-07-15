@@ -136,6 +136,7 @@ export class HostService {
 
     await this.cacheManager.del('BnbPhoneNumberCheckCode');
     await this.cacheManager.set('BnbPhoneNumberCheckCode', code, 180000);
+    return true;
   }
 
   async checkSms(checkSmsDto: CheckSmsDto): Promise<boolean> {
