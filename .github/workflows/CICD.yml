@@ -33,7 +33,6 @@ jobs:
 
   CD:
     needs: CI
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
 
     steps:
