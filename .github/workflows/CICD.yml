@@ -46,4 +46,8 @@ jobs:
           username: ${{ secrets.USER_NAME }}
           port: ${{ secrets.PORT }}
           script: |
-            whoami
+            cd thbnb
+            cd TaeHyeongBnb
+            git pull
+            npm run build
+            pm2 restart 0
