@@ -48,5 +48,5 @@ jobs:
             cd thbnb
             cd TaeHyeongBnb
             git pull
-            npm run bulid
+            npm run build
             pm2 restart 0
