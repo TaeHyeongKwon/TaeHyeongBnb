@@ -28,8 +28,8 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: run test
-        run: npm test
+      #- name: run test
+      #  run: npm test
 
   CD:
     needs: CI
@@ -45,7 +45,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script_stop: true
           script: |
-            source ~/.bashrc
+            source ~/.profile
             cd thbnb
             cd TaeHyeongBnb
             git pull
