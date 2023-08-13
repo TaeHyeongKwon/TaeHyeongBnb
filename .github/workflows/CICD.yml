@@ -45,7 +45,8 @@ jobs:
           port: ${{ secrets.PORT }}
           script_stop: true
           script: |
-            source ~/.profile
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             cd thbnb
             cd TaeHyeongBnb
             git pull
