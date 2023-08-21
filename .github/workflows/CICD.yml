@@ -47,6 +47,7 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
+            export NODE_OPTIONS="--max-old-space-size=2048"
             cd thbnb
             cd TaeHyeongBnb
             git pull
