@@ -43,7 +43,6 @@ export class UserService {
       await queryRunner.commitTransaction();
       return result;
     } catch (err) {
-      console.error(err);
       //트랜잭션중 실패하면 롤백
       await queryRunner.rollbackTransaction();
       throw new HttpException('회원가입 트랜잭션 롤백 에러', 500);

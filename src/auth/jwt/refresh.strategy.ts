@@ -17,7 +17,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
       ]),
       ignoreExpiration: false,
       // 리프레시 토큰 비밀키
-      secretOrKey: process.env.REFRESH_JWT_SECRET,
+      secretOrKey: process.env.REFRESH_JWT_SECRET || 'testRefreshSecretKey',
     });
   }
 

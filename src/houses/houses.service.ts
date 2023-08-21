@@ -14,7 +14,7 @@ import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateHouseDto } from './dto/create.house.dto';
 import { User } from 'src/entities/user.entity';
-import { deleteImageInS3 } from 'common/multerOption';
+import { deleteImageInS3 } from '../../common/multerOption';
 import { UpdateHouseDto } from './dto/update.house.dto';
 import { ReservationsService } from '../reservations/reservations.service';
 
@@ -47,17 +47,18 @@ export class HousesService {
     user: User,
     createHouseDto: CreateHouseDto,
     files: Array<Express.MulterS3.File>,
-  ): Promise<void> {
+  ): Promise<House> {
     if (user.host_certification !== true)
       throw new ForbiddenException('호스트 등록 필요');
+
+    //최소 1개 이상의 이미지가 필요
+    if (!files[0]) throw new BadRequestException('이미지가 없습니다.');
 
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
 
     await queryRunner.startTransaction();
-    //최소 1개 이상의 이미지가 필요
-    if (!files[0]) throw new BadRequestException('이미지가 없습니다.');
 
     const images = files.map((file, index) => {
       const url = file.location;
@@ -72,13 +73,12 @@ export class HousesService {
         images,
       });
 
-      const result = await queryRunner.manager.save(house);
-      console.log(result);
+      const houseInfo = await queryRunner.manager.save(house);
 
       await queryRunner.commitTransaction();
+      return houseInfo;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      //업로드 실행된 이미지 s3에서 제거
       for (const toBeDeletedImage of images) {
         await deleteImageInS3(toBeDeletedImage);
       }
@@ -132,7 +132,7 @@ export class HousesService {
 
       const updatedHouse = { userId: user.id, ...updateHouseDto, images };
 
-      await this.houseRepository.update(id, updatedHouse);
+      return await this.houseRepository.update(id, updatedHouse);
     } catch (e) {
       for (const toBeDeletedImage of addedImages) {
         await deleteImageInS3(toBeDeletedImage);

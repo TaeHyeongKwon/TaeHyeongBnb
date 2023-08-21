@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { FindOneOptions, LessThan, MoreThan, Repository } from 'typeorm';
 import { ReservationInfo } from './interface/reservation.interface';
-import { HousesService } from 'src/houses/houses.service';
+import { HousesService } from '../houses/houses.service';
 
 @Injectable()
 export class ReservationsService {
@@ -26,10 +26,7 @@ export class ReservationsService {
     reservationInfo: ReservationInfo,
   ): Promise<ReservationInfo> {
     //해당 숙소가 존재하는지 확인
-    const existHouse = await this.housesService.findHouse(
-      reservationInfo.houseId,
-    );
-    if (!existHouse) throw new NotFoundException('없는 숙소');
+    await this.housesService.findHouse(reservationInfo.houseId);
 
     //오늘 보다 이전인 check-in예약은 불가능
     const today = new Date().toISOString().split('T')[0];

@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { AccessTokenGuard } from 'src/auth/jwt/access.guard';
+import { AccessTokenGuard } from '../auth/jwt/access.guard';
 import { User } from '../entities/user.entity';
-import { GetUser } from 'common/decorator/get.user.decorator';
+import { GetUser } from '../../common/decorator/get.user.decorator';
 @Controller('comment')
 @UseGuards(AccessTokenGuard)
 export class CommentController {

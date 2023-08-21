@@ -24,7 +24,7 @@ export class ReservationsController {
   //예약정보 생성 API
   @Post(':id')
   @UsePipes(ValidationPipe)
-  createReservation(
+  async createReservation(
     @GetUser() user: User,
     @Param('id') id: number,
     @Body() createReservationDto: CreateReservationDto,
@@ -36,20 +36,20 @@ export class ReservationsController {
       houseId,
       ...createReservationDto,
     };
-    return this.reservationsService.createReservation(reservationInfo);
+    return await this.reservationsService.createReservation(reservationInfo);
   }
 
   //사용자 예약정보 리스트 조회 API
   @Get('my')
-  getMyReservation(@GetUser() user: User) {
+  async getMyReservation(@GetUser() user: User) {
     const userId = user.id;
 
-    return this.reservationsService.getMyReservation(userId);
+    return await this.reservationsService.getMyReservation(userId);
   }
 
   //예약 취소하기 API
   @Delete(':id')
-  deleteReservation(@GetUser() user: User, @Param('id') id: number) {
-    return this.reservationsService.deleteReservation(id, user.id);
+  async deleteReservation(@GetUser() user: User, @Param('id') id: number) {
+    return await this.reservationsService.deleteReservation(id, user.id);
   }
 }

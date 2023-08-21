@@ -1,5 +1,5 @@
 {
-  "name": "enkor-bnb",
+  "name": "taehyeong-bnb",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -36,6 +36,8 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cron": "^2.0.1",
+    "@types/crypto-js": "^4.1.1",
+    "@types/mock-aws-s3": "^2.6.3",
     "@types/multer": "^1.4.7",
     "@types/multer-s3": "^3.0.0",
     "@types/passport-jwt": "^3.0.8",
@@ -49,6 +51,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "helmet": "^7.0.0",
+    "mock-aws-s3": "^4.0.2",
     "multer-s3": "^3.0.1",
     "mysql2": "^3.2.3",
     "nodemailer": "^6.9.3",
@@ -60,7 +63,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^9.0.0",
+    "@nestjs/cli": "^9.5.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
     "@types/express": "^4.17.13",
@@ -94,9 +97,17 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!main.(t|j)s",
+      "!**/*.module.(t|j)s",
+      "!**.*/entity.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      ".module.ts",
+      ".entity.ts"
+    ],
     "testEnvironment": "node"
   }
 }

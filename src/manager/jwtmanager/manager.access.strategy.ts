@@ -15,7 +15,7 @@ export class ManagerAccessStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       //엑세스토큰 검증 비밀키
-      secretOrKey: process.env.M_ACCESS_SECRET,
+      secretOrKey: process.env.M_ACCESS_SECRET || 'testManagerAccess',
     });
   }
 

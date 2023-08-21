@@ -2,29 +2,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HousesController } from './houses.controller';
 import { HousesService } from './houses.service';
 import { FindAllHouseDto, ListSort } from './dto/findall.house.dto';
-import { Request } from 'express';
+import { User } from '../entities/user.entity';
+import { CreateHouseDto } from './dto/create.house.dto';
+import { UpdateHouseDto } from './dto/update.house.dto';
+import { ImageQueryKeyDto } from './dto/findparams.house.dto';
 
-//테스트케이스 'HouseController'
 describe('HousesController', () => {
   let housesController: HousesController;
 
   const mockHouseService = {
     findHouseList: jest.fn(),
     findHouse: jest.fn(),
+    createHouse: jest.fn(),
+    getWrittenHouseDetail: jest.fn(),
+    updateHouse: jest.fn(),
+    deleteImage: jest.fn(),
+    deleteHouse: jest.fn(),
   };
-
-  const mockRequest: Request = {
-    params: jest.fn(),
-  } as unknown as Request;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HousesController],
-      providers: [HousesService],
-    })
-      .overrideProvider(HousesService)
-      .useValue(mockHouseService)
-      .compile();
+      providers: [{ provide: HousesService, useValue: mockHouseService }],
+    }).compile();
 
     housesController = module.get<HousesController>(HousesController);
   });
@@ -33,63 +33,55 @@ describe('HousesController', () => {
     expect(housesController).toBeDefined();
   });
 
-  it('숙소 리스트 조회 성공 case', async () => {
+  it('findHouseList success case', async () => {
     const findAllHouseDto: FindAllHouseDto = { page: '1', sort: ListSort.ASC };
 
-    const houseslist = [
-      {
-        id: 4,
-        name: '너와집',
-        university: '서울대학교',
-        houseType: '아파트',
-        pricePerDay: 20000,
-        images: [
-          {
-            key: 1,
-            url: 'http://www.cha.go.kr/unisearch/images/imp_folklore_material/1633792.jpg',
-          },
-          {
-            key: 2,
-            url: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Korea-Samcheok-Neowajip-Shingled_house-02.jpg',
-          },
-          {
-            id: 1,
-            name: '산포리 펜션',
-            university: '울진대학교',
-            houseType: '펜션',
-            pricePerDay: 30000,
-            images: [
-              {
-                key: 1,
-                url: 'http://si.wsj.net/public/resources/images/OB-YO176_hodcol_H_20130815124744.jpg',
-              },
-              {
-                key: 2,
-                url: 'https://image.pensionlife.co.kr/penimg/pen_1/pen_19/1977/9734f7418fcc01a2321ba800b1f2c7ee.jpg',
-              },
-            ],
-          },
-        ],
-      },
-    ];
-
     mockHouseService.findHouseList = jest.fn(() => {
-      return houseslist;
+      return 'findHouseList result';
     });
 
     const result = await housesController.findHouseList(findAllHouseDto);
 
-    expect(result).toEqual(houseslist);
-    expect(result).toBeInstanceOf(Array);
-    expect(mockHouseService.findHouseList).toHaveBeenCalledTimes(1);
+    expect(result).toEqual('findHouseList result');
     expect(mockHouseService.findHouseList).toHaveBeenCalledWith({
       page: '1',
       sort: 'ASC',
     });
   });
 
-  it('숙소 상세 조회 성공 case', async () => {
-    const id = Number(mockRequest.params.id);
+  it('createHouse success case', async () => {
+    const createHouseDto: CreateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const user = new User();
+    user.id = expect.any(Number);
+
+    const files = [
+      { location: 'image/url/location1' },
+      { location: 'image/url/location2' },
+    ] as Array<Express.MulterS3.File>;
+
+    mockHouseService.createHouse = jest.fn(() => {
+      return 'creat result';
+    });
+
+    const result = await housesController.createHouse(
+      createHouseDto,
+      user,
+      files,
+    );
+
+    expect(result).toEqual('creat result');
+    expect(mockHouseService.createHouse).toBeCalledTimes(1);
+  });
+
+  it('findHouse success case', async () => {
+    const id = expect.any(Number);
 
     const houseDetail = {
       id: 1,
@@ -118,9 +110,88 @@ describe('HousesController', () => {
 
     const result = await housesController.findHouse(id);
 
-    expect(result).toBeInstanceOf(Object);
     expect(result).toEqual(houseDetail);
     expect(mockHouseService.findHouse).toHaveBeenCalledWith(id);
     expect(mockHouseService.findHouse).toHaveBeenCalledTimes(1);
+  });
+
+  it('getWrittenHouseDetail success case', async () => {
+    const user = new User();
+    user.id = expect.any(Number);
+
+    const id = expect.any(Number);
+
+    mockHouseService.getWrittenHouseDetail = jest.fn(() => {
+      return 'getWrittenHouseDetail result';
+    });
+
+    const result = await housesController.getWrittenHouseDetail(user, id);
+
+    expect(result).toEqual('getWrittenHouseDetail result');
+    expect(mockHouseService.getWrittenHouseDetail).toBeCalledTimes(1);
+    expect(mockHouseService.getWrittenHouseDetail).toBeCalledWith(user.id, id);
+  });
+
+  it('updateHouse success case', async () => {
+    const id = 1;
+    const updateHouseDto: UpdateHouseDto = {
+      name: expect.any(String),
+      description: expect.any(String),
+      address: expect.any(String),
+      houseType: expect.any(String),
+      pricePerDay: expect.any(Number),
+    };
+
+    const user = new User();
+    user.id = 1;
+
+    const files = [
+      { location: 'image/url/location3' },
+      { location: 'image/url/location4' },
+    ] as Array<Express.MulterS3.File>;
+
+    mockHouseService.updateHouse.mockResolvedValue('update result');
+
+    const result = await housesController.updateHouse(
+      id,
+      updateHouseDto,
+      user,
+      files,
+    );
+
+    expect(result).toEqual('update result');
+    expect(mockHouseService.updateHouse).toBeCalledWith(
+      id,
+      user,
+      updateHouseDto,
+      files,
+    );
+    expect(mockHouseService.updateHouse).toBeCalledTimes(1);
+  });
+
+  it('deleteImage success case', async () => {
+    const query: ImageQueryKeyDto = { key: 1 };
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = expect.any(Number);
+
+    await housesController.deleteImage(query, id, user);
+
+    expect(mockHouseService.deleteImage).toBeCalledTimes(1);
+    expect(mockHouseService.deleteImage).toBeCalledWith(id, query.key, user.id);
+  });
+
+  it('deleteHouse success case', async () => {
+    const id = expect.any(Number);
+    const user = new User();
+    user.id = 1;
+
+    mockHouseService.deleteHouse.mockResolvedValue('deleteHouse result');
+
+    const result = await housesController.deleteHouse(id, user);
+
+    expect(result).toEqual('deleteHouse result');
+    expect(mockHouseService.deleteHouse).toBeCalledTimes(1);
+    expect(mockHouseService.deleteHouse).toBeCalledWith(id, user.id);
   });
 });

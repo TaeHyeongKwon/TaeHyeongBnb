@@ -7,8 +7,8 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from '../entities/review.entity';
 import { FindOneOptions, Repository } from 'typeorm';
-import { HousesService } from 'src/houses/houses.service';
-import { ReservationsService } from 'src/reservations/reservations.service';
+import { HousesService } from '../houses/houses.service';
+import { ReservationsService } from '../reservations/reservations.service';
 
 @Injectable()
 export class ReviewService {
@@ -44,15 +44,12 @@ export class ReviewService {
     });
     if (existReview) throw new ConflictException('해당 예약의 리뷰가 존재');
 
-    console.log(createReviewDto);
     const reviewInfo = await this.reviewRepository.create({
       userId,
       houseId: houseInfo.id,
       reservationId,
       ...createReviewDto,
     });
-
-    console.log(reviewInfo);
 
     await this.reviewRepository.save(reviewInfo);
 
